@@ -987,6 +987,9 @@ New dictionary:
     <!-- Text requesting the user to gesture a word
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_please_type">Please gesture type:</string>
+    <!-- Text requesting the user to switch to HeliBoard, in case a different keyboard app is active
+     string will probably be removed once data gathering is finished (end of 2026 latest) -->
+    <string name="gesture_data_please_switch_keyboard">Please switch to %s</string>
     <!-- Button for saving data and go to next word (now only shows up when the word %s is not in suggestions)
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_next_save">Got "%s". Click if you\'re sure you gestured correctly</string>
