@@ -374,8 +374,7 @@ class GestureDataDao(val db: Database) {
         return result
     }
 
-    fun getJsonData(ids: List<Long>): List<String> = synchronized(this) {
-        val result = mutableListOf<String>()
+    fun getJsonData(ids: List<Long>): Sequence<String> = synchronized(this) { sequence {
         db.readableDatabase.query(
             TABLE,
             arrayOf(COLUMN_DATA),
@@ -386,14 +385,12 @@ class GestureDataDao(val db: Database) {
             null
         ).use {
             while (it.moveToNext()) {
-                result.add(it.getString(0))
+                yield(it.getString(0))
             }
         }
-        return result
-    }
+    }}
 
-    fun getAllJsonData(): List<String> = synchronized(this) {
-        val result = mutableListOf<String>()
+    fun getAllJsonData(): Sequence<String> = synchronized(this) { sequence {
         db.readableDatabase.query(
             TABLE,
             arrayOf(COLUMN_DATA),
@@ -404,11 +401,10 @@ class GestureDataDao(val db: Database) {
             null
         ).use {
             while (it.moveToNext()) {
-                result.add(it.getString(0))
+                yield(it.getString(0))
             }
         }
-        return result
-    }
+    }}
 
     fun markAsExported(ids: List<Long>, context: Context) = synchronized(this) {
         if (ids.isEmpty()) return
