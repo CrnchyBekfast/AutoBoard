@@ -1038,6 +1038,9 @@ New dictionary:
     <!-- Text for delete dialog, offering delete all / shared / cancel options
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_delete_dialog">You have data for %1$s new and %2$s already shared words.</string>
+    <!-- Text informing about the limit of exporting at most %s words at once
+     string will probably be removed once data gathering is finished (end of 2026 latest) -->
+    <string name="gesture_data_share_limit">To avoid exceeding size limits, only the first %s words will be exported</string>
     <!-- Short text for delete all button (%s is number of words)
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_delete_dialog_all">Delete all %s words</string>
