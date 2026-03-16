@@ -1128,6 +1128,11 @@ public class LatinIME extends InputMethodService implements
     }
 
     @Override
+    public void onSwipeDownOnToolbar() {
+        requestHideSelf(0);
+    }
+
+    @Override
     public void onDisplayCompletions(final CompletionInfo[] applicationSpecifiedCompletions) {
         if (DebugFlags.DEBUG_ENABLED) {
             Log.i(TAG, "Received completions:");
