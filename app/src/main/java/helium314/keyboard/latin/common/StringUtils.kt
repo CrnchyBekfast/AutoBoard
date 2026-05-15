@@ -304,3 +304,14 @@ fun moveStepsToCharCount(text: CharSequence, steps: Int): Int {
 }
 
 fun String.splitOnWhitespace() = SpacedTokens(this).toList()
+
+fun stripTrailingSeparatorsAndConnectors(word: String, spacingAndPunctuations: SpacingAndPunctuations): String {
+    var end = word.length
+    loopOverCodePointsBackwards(word) { cp, l ->
+        if (!spacingAndPunctuations.isWordSeparator(cp) && !spacingAndPunctuations.isWordConnector(cp))
+            return@loopOverCodePointsBackwards true
+        end -= l
+        false
+    }
+    return if (end == word.length) word else word.substring(0, end)
+}
