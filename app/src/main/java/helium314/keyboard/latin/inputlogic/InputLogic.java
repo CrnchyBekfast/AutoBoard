@@ -964,7 +964,7 @@ public final class InputLogic {
                 || mWordComposer.isComposingWord() // emoji will be part of the word in this case, better do nothing
                 || !settingsValues.mBigramPredictionEnabled // this is only for next word suggestions, so they need to be enabled
                 || settingsValues.mIncognitoModeEnabled
-                || !settingsValues.isSuggestionsEnabledPerUserSettings() // see comment in performAdditionToUserHistoryDictionary
+                || !settingsValues.mSuggestionsEnabled // see comment in performAdditionToUserHistoryDictionary
                 || !StringUtilsKt.isEmoji(text)
         ) return;
         if (mConnection.hasSlowInputConnection()) {
@@ -1667,7 +1667,7 @@ public final class InputLogic {
         // That's to avoid unintended additions in some sensitive fields, or fields that
         // expect to receive non-words.
         // mInputTypeNoAutoCorrect changed to !isSuggestionsEnabledPerUserSettings because this was cancelling learning way too often
-        if (!settingsValues.isSuggestionsEnabledPerUserSettings() || TextUtils.isEmpty(suggestion))
+        if (!settingsValues.mSuggestionsEnabled || TextUtils.isEmpty(suggestion))
             return;
         boolean wasAutoCapitalized = mWordComposer.wasAutoCapitalized() && !mWordComposer.isMostlyCaps();
         String word = StringUtilsKt.stripTrailingSeparatorsAndConnectors(suggestion, settingsValues.mSpacingAndPunctuations);
@@ -1739,7 +1739,7 @@ public final class InputLogic {
                     && mLatinIME.tryShowClipboardSuggestion())) {
                 mSuggestionStripViewAccessor.setSuggestions(suggestedWords);
             }
-            if (! suggestedWords.isEmpty() && settingsValues.isSuggestionsEnabledPerUserSettings() && isInlineEmojiSearchAction()) {
+            if (!suggestedWords.isEmpty() && settingsValues.mSuggestionsEnabled && isInlineEmojiSearchAction()) {
                 mSuggestionStripViewAccessor.showSuggestionStrip();
             }
         }

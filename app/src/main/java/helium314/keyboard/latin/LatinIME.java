@@ -1145,7 +1145,7 @@ public class LatinIME extends InputMethodService implements
                 }
             }
         }
-        if (!mSettings.getCurrent().isApplicationSpecifiedCompletionsOn()) {
+        if (!mSettings.getCurrent().mInputAttributes.mApplicationSpecifiedCompletionOn) {
             return;
         }
         // If we have an update request in flight, we need to cancel it so it does not override
@@ -1476,14 +1476,14 @@ public class LatinIME extends InputMethodService implements
         }
 
         final boolean isEmptyApplicationSpecifiedCompletions =
-                currentSettingsValues.isApplicationSpecifiedCompletionsOn()
+                currentSettingsValues.mInputAttributes.mApplicationSpecifiedCompletionOn
                         && suggestedWords.isEmpty();
         final boolean noSuggestionsFromDictionaries = suggestedWords.isEmpty()
                 || suggestedWords.isPunctuationSuggestions()
                 || isEmptyApplicationSpecifiedCompletions;
 
-        if (currentSettingsValues.isSuggestionsEnabledPerUserSettings()
-                || currentSettingsValues.isApplicationSpecifiedCompletionsOn()
+        if (currentSettingsValues.mSuggestionsEnabled
+                || currentSettingsValues.mInputAttributes.mApplicationSpecifiedCompletionOn
                 // We should clear the contextual strip if there is no suggestion from dictionaries.
                 || noSuggestionsFromDictionaries) {
             mSuggestionStripView.setSuggestions(suggestedWords,
