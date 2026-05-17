@@ -187,6 +187,7 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_TOOLBAR_HIDING_GLOBAL = "toolbar_hiding_global";
     public static final String PREF_TOOLBAR_SWIPE_DOWN_TO_HIDE = "toolbar_swipe_down_to_hide";
     public static final String PREF_SPELLCHECK_SUGGEST = "spellcheck_suggest";
+    public static final String PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD = "only_toolbar_with_hw_keyboard";
 
     // Emoji
     public static final String PREF_EMOJI_MAX_SDK = "emoji_max_sdk";
@@ -480,6 +481,11 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
         // is NOKEYS and if it's not hidden (e.g. folded inside the device).
         return conf.keyboard != Configuration.KEYBOARD_NOKEYS
                 && conf.hardKeyboardHidden != Configuration.HARDKEYBOARDHIDDEN_YES;
+    }
+
+    public boolean readShowToolbarOnly() {
+        return mSettingsValues.mHasHardwareKeyboard
+            && mPrefs.getBoolean(PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD, Defaults.PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD);
     }
 
     @Nullable public static Drawable readUserBackgroundImage(final Context context, final boolean night) {
