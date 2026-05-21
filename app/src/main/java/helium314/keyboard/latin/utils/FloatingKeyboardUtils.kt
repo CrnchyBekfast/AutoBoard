@@ -37,10 +37,10 @@ object FloatingKeyboardUtils {
 
     @JvmStatic
     fun disableFloating(view: View) {
-        if (DebugFlags.DEBUG_ENABLED)
-            Log.d(TAG, "disable floating view")
         val lp = view.layoutParams as? ViewGroup.MarginLayoutParams ?: return
         if (lp.width == ViewGroup.LayoutParams.MATCH_PARENT) return // not floating
+        if (DebugFlags.DEBUG_ENABLED)
+            Log.d(TAG, "disable floating view")
         lp.width = ViewGroup.LayoutParams.MATCH_PARENT
         lp.height = ViewGroup.LayoutParams.MATCH_PARENT
         lp.leftMargin = 0
