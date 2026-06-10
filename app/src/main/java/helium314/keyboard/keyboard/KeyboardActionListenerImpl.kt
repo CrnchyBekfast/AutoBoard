@@ -25,7 +25,10 @@ import helium314.keyboard.latin.common.moveStepsToCharCount
 import helium314.keyboard.latin.define.ProductionFlags
 import helium314.keyboard.latin.inputlogic.InputLogic
 import helium314.keyboard.latin.settings.Settings
+import helium314.keyboard.latin.utils.GestureDataGatheringSettings
+import helium314.keyboard.latin.utils.BackgroundGatheringCache
 import helium314.keyboard.latin.utils.SubtypeSettings
+import helium314.keyboard.latin.utils.prefs
 import kotlin.math.abs
 
 class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inputLogic: InputLogic) : KeyboardActionListener {
@@ -101,7 +104,31 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
     override fun onCodeInput(primaryCode: Int, x: Int, y: Int, isKeyRepeat: Boolean) {
         when (primaryCode) {
             KeyCode.TOGGLE_AUTOCORRECT -> return settings.toggleAutoCorrect()
-            KeyCode.TOGGLE_INCOGNITO_MODE -> return settings.toggleAlwaysIncognitoMode()
+            KeyCode.TOGGLE_INCOGNITO_MODE -> {
+                settings.toggleAlwaysIncognitoMode()
+                BackgroundGatheringCache.clear()
+                latinIME.setGestureDataGatheringMode(latinIME.currentInputEditorInfo, false)
+                return
+            }
+            KeyCode.BACKGROUND_GATHERING -> {
+                if (BackgroundGatheringCache.isEmpty) {
+                    // only enable, no toggle
+                    GestureDataGatheringSettings.setBackgroundGatheringEnabled(latinIME.prefs(), true)
+                    latinIME.setGestureDataGatheringMode(latinIME.currentInputEditorInfo, false)
+                } else {
+                    if (GestureDataGatheringSettings.isDiscardByDefault(latinIME))
+                        BackgroundGatheringCache.save(latinIME)
+                    else
+                        BackgroundGatheringCache.clear()
+                }
+                return
+            }
+            KeyCode.BACKGROUND_GATHERING_TEMP_OFF -> {
+                GestureDataGatheringSettings.tempDisableBackgroundGathering(latinIME.prefs())
+                BackgroundGatheringCache.clear()
+                latinIME.setGestureDataGatheringMode(latinIME.currentInputEditorInfo, false)
+                return
+            }
         }
         if (Settings.getValues().mIsLocked && KeyCode.isIsBlockedWhenLocked(primaryCode))
             return

@@ -55,9 +55,11 @@ import helium314.keyboard.latin.settings.SpacingAndPunctuations;
 import helium314.keyboard.latin.suggestions.SuggestionStripViewAccessor;
 import helium314.keyboard.latin.utils.AsyncResultHolder;
 import helium314.keyboard.latin.utils.DictionaryInfoUtils;
+import helium314.keyboard.latin.utils.GestureDataGatheringKt;
 import helium314.keyboard.latin.utils.InputTypeUtils;
 import helium314.keyboard.latin.utils.IntentUtils;
 import helium314.keyboard.latin.utils.Log;
+import helium314.keyboard.latin.utils.BackgroundGatheringCache;
 import helium314.keyboard.latin.utils.RecapitalizeMode;
 import helium314.keyboard.latin.utils.RecapitalizeStatus;
 import helium314.keyboard.latin.utils.ScriptUtils;
@@ -234,8 +236,13 @@ public final class InputLogic {
                 SystemClock.uptimeMillis(), mSpaceState,
                 getActualCapsMode(settingsValues, keyboardShiftMode));
         mConnection.beginBatchEdit();
+        if (GestureDataGatheringKt.useBackgroundGathering && mConnection.hasSelection())
+            BackgroundGatheringCache.INSTANCE.onEditSelection(mConnection.getSelectedText(0), mConnection.getTextBeforeCursor(40, 0), mConnection.getTextAfterCursor(40, 0));
         if (mWordComposer.isComposingWord()) {
             if (mWordComposer.isCursorFrontOrMiddleOfComposingWord()) {
+                if (GestureDataGatheringKt.useBackgroundGathering)
+                    BackgroundGatheringCache.INSTANCE.onEditWord(mWordComposer.getTypedWord());
+
                 // stop composing, otherwise the text will end up at the end of the current word
                 mConnection.finishComposingText();
                 resetComposingState(false);
@@ -291,6 +298,13 @@ public final class InputLogic {
             // Rely on onCodeInput to do the complicated swapping/stripping logic consistently.
             final Event event = Event.createPunctuationSuggestionPickedEvent(suggestionInfo);
             return onCodeInput(settingsValues, event, keyboardShiftState, currentKeyboardScript, handler);
+        }
+        if (GestureDataGatheringKt.useBackgroundGathering) {
+            if (mWordComposer.isBatchMode())
+                // should only happen selecting different suggestion for gesture typed word
+                BackgroundGatheringCache.INSTANCE.onPickSuggestionAfterGesturing(suggestionInfo, mWordComposer.getTypedWord());
+            else
+                BackgroundGatheringCache.INSTANCE.onPickSuggestion(suggestionInfo, mWordComposer.getTypedWord());
         }
 
         final Event event = Event.createSuggestionPickedEvent(suggestionInfo);
@@ -364,6 +378,11 @@ public final class InputLogic {
         if (mConnection.isBelatedExpectedUpdate(oldSelStart, newSelStart, oldSelEnd, newSelEnd, composingSpanStart, composingSpanEnd)) {
             return false;
         }
+
+        // if all text is gone, we treat it like onStartInput
+        if (GestureDataGatheringKt.useBackgroundGathering && newSelStart == 0 && newSelEnd == 0 && !mConnection.hasTextAfterCursor())
+            BackgroundGatheringCache.saveOrClear(mLatinIME);
+
         // TODO: the following is probably better done in resetEntireInputState().
         // it should only happen when the cursor moved, and the very purpose of the
         // test below is to narrow down whether this happened or not. Likewise with
@@ -450,6 +469,12 @@ public final class InputLogic {
             final String currentKeyboardScript, final LatinIME.UIHandler handler) {
         mWordBeingCorrectedByCursor = null;
         mJustRevertedACommit = false;
+
+        if (GestureDataGatheringKt.useBackgroundGathering && mConnection.hasSelection())
+            BackgroundGatheringCache.INSTANCE.onEditSelection(mConnection.getSelectedText(0), mConnection.getTextBeforeCursor(40, 0), mConnection.getTextAfterCursor(40, 0));
+        if (GestureDataGatheringKt.useBackgroundGathering && mWordComposer.isComposingWord() && mWordComposer.isCursorFrontOrMiddleOfComposingWord())
+            BackgroundGatheringCache.INSTANCE.onEditWord(mWordComposer.getTypedWord());
+
         final Event processedEvent = mWordComposer.processEvent(event);
         final InputTransaction inputTransaction = new InputTransaction(settingsValues,
                 processedEvent, SystemClock.uptimeMillis(), mSpaceState,
@@ -510,6 +535,12 @@ public final class InputLogic {
         handler.showGesturePreviewAndSetSuggestions(SuggestedWords.getEmptyBatchInstance(), false);
         handler.cancelUpdateSuggestionStrip();
         ++mAutoCommitSequenceNumber;
+
+        if (GestureDataGatheringKt.useBackgroundGathering && mConnection.hasSelection())
+            BackgroundGatheringCache.INSTANCE.onEditSelection(mConnection.getSelectedText(0), mConnection.getTextBeforeCursor(40, 0), mConnection.getTextAfterCursor(40, 0));
+        if (GestureDataGatheringKt.useBackgroundGathering && mWordComposer.isComposingWord() && mWordComposer.isCursorFrontOrMiddleOfComposingWord())
+            BackgroundGatheringCache.INSTANCE.onEditWord(mWordComposer.getTypedWord());
+
         mConnection.beginBatchEdit();
         if (mWordComposer.isComposingWord()) {
             if (mWordComposer.isCursorFrontOrMiddleOfComposingWord()) {
@@ -792,6 +823,8 @@ public final class InputLogic {
                 }
                 break;
             case KeyCode.UNDO:
+                if (GestureDataGatheringKt.useBackgroundGathering)
+                    BackgroundGatheringCache.INSTANCE.onUndo(mWordComposer.isComposingWord() ? mWordComposer.getTypedWord() : mLastComposedWord.mCommittedWord);
                 sendDownUpKeyEventWithMetaState(KeyEvent.KEYCODE_Z, KeyEvent.META_CTRL_ON);
                 break;
             case KeyCode.REDO:
@@ -1233,6 +1266,8 @@ public final class InputLogic {
         if (mWordComposer.isComposingWord()) {
             if (mWordComposer.isBatchMode()) {
                 final String rejectedSuggestion = mWordComposer.getTypedWord();
+                if (GestureDataGatheringKt.useBackgroundGathering)
+                    BackgroundGatheringCache.INSTANCE.onRejectedSuggestion(rejectedSuggestion);
                 mWordComposer.reset();
                 mWordComposer.setRejectedBatchModeSuggestion(rejectedSuggestion);
                 if (!TextUtils.isEmpty(rejectedSuggestion)) {
@@ -1241,6 +1276,8 @@ public final class InputLogic {
                 }
                 StatsUtils.onBackspaceWordDelete(rejectedSuggestion.length());
             } else {
+                if (GestureDataGatheringKt.useBackgroundGathering)
+                    BackgroundGatheringCache.INSTANCE.removeLast(mWordComposer.getTypedWord());
                 mWordComposer.applyProcessedEvent(event);
                 StatsUtils.onBackspacePressed(1);
             }
@@ -2268,8 +2305,8 @@ public final class InputLogic {
             insertAutomaticSpaceIfOptionsAndTextAllow(settingsValues);
             mSpaceState = SpaceState.NONE;
         }
-        enterInlineEmojiSearchIfNeeded(batchInputText.codePointAt(0), settingsValues);
         mWordComposer.setBatchInputWord(batchInputText);
+        enterInlineEmojiSearchIfNeeded(batchInputText.codePointAt(0), settingsValues);
         setComposingTextInternal(batchInputText, 1);
         mConnection.endBatchEdit();
         // Space state must be updated before calling updateShiftState
@@ -2616,6 +2653,10 @@ public final class InputLogic {
 
         if (isStartOfInlineEmojiSearch(codePoint, mConnection.getCodePointBeforeCursor(), mConnection.getCharBeforeBeforeCursor(),
                                        settingsValues)) {
+            if (mWordComposer.isBatchMode())
+                // when entering inline emoji search with glide typing, the action is not set when the word is added
+                // this means we don't detect inline search mode, so we remove to word now
+                BackgroundGatheringCache.INSTANCE.removeLast(mWordComposer.getTypedWord());
             setInlineEmojiSearchAction(true);
         }
     }
