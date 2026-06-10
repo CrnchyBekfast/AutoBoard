@@ -628,7 +628,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         if (mBackgroundGatheringIndicator.getLayoutParams() instanceof ViewGroup.MarginLayoutParams margin) {
             Keyboard kb = mKeyboardView.getKeyboard();
             if (kb != null)
-                margin.topMargin = kb.mBaseHeight - mBackgroundGatheringIndicator.getHeight();
+                margin.topMargin = kb.mOccupiedHeight - mBackgroundGatheringIndicator.getHeight();
             mBackgroundGatheringIndicator.setLayoutParams(mBackgroundGatheringIndicator.getLayoutParams());
         }
     }
