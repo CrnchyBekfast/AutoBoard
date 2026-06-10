@@ -78,7 +78,6 @@ class KeyboardIconsSet private constructor() {
         const val NAME_STOP_ONEHANDED_KEY = "stop_onehanded_mode_key"
         const val NAME_SWITCH_ONEHANDED_KEY = "switch_onehanded_key"
         const val NAME_RESIZE_ONEHANDED_KEY = "resize_onehanded_key"
-        const val NAME_TOGGLE_FLOATING = "toggle_floating"
         const val NAME_TOOLBAR_KEY = "toolbar_key"
         const val NAME_BIN = "bin"
 
@@ -122,7 +121,6 @@ class KeyboardIconsSet private constructor() {
             NAME_RESIZE_ONEHANDED_KEY to        R.drawable.ic_arrow_horizontal,
             NAME_TOOLBAR_KEY to                 R.drawable.ic_arrow_right,
             NAME_BIN to                         R.drawable.ic_bin,
-            NAME_TOGGLE_FLOATING to             R.drawable.ic_drag_indicator
         ).apply {
             ToolbarKey.entries.forEach {
                 put(it.name.lowercase(Locale.US), when (it) {
@@ -186,7 +184,6 @@ class KeyboardIconsSet private constructor() {
             NAME_RESIZE_ONEHANDED_KEY to        R.drawable.ic_arrow_horizontal,
             NAME_TOOLBAR_KEY to                 R.drawable.ic_arrow_right,
             NAME_BIN to                         R.drawable.ic_bin,
-            NAME_TOGGLE_FLOATING to             R.drawable.ic_drag_indicator
         ).apply {
             ToolbarKey.entries.forEach {
                 put(it.name.lowercase(Locale.US), when (it) {
@@ -250,7 +247,6 @@ class KeyboardIconsSet private constructor() {
             NAME_RESIZE_ONEHANDED_KEY to        R.drawable.ic_arrow_horizontal_rounded,
             NAME_TOOLBAR_KEY to                 R.drawable.ic_arrow_right_rounded,
             NAME_BIN to                         R.drawable.ic_bin_rounded,
-            NAME_TOGGLE_FLOATING to             R.drawable.ic_drag_indicator
         ).apply {
             ToolbarKey.entries.forEach {
                 put(it.name.lowercase(Locale.US), when (it) {
