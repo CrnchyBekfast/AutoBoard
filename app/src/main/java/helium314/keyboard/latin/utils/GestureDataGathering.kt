@@ -293,9 +293,11 @@ class WordData(
                 break // no use for suggestions after that
         }
         // redact words that don't match the top suggestion / target word
-        for (i in filteredSuggestions.indices) {
-            if (filteredSuggestions[i].mWord != (targetWord ?: topSuggestion?.word))
-                filteredSuggestions[i] = filteredSuggestions[i].redact()
+        if (!activeMode) {
+            for (i in filteredSuggestions.indices) {
+                if (filteredSuggestions[i].mWord != (targetWord ?: topSuggestion?.word))
+                    filteredSuggestions[i] = filteredSuggestions[i].redact()
+            }
         }
         return filteredSuggestions
     }
