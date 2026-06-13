@@ -15,8 +15,8 @@ android {
         applicationId = "helium314.keyboard"
         minSdk = 21
         targetSdk = 36
-        versionCode = 4000
-        versionName = "4.0-alpha1"
+        versionCode = 4001
+        versionName = "4.0-alpha1-dev"
         ndk {
             abiFilters.clear()
             abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
