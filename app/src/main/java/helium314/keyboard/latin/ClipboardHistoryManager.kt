@@ -259,10 +259,11 @@ class ClipboardHistoryManager(
             val saveUriData = context.prefs().getBoolean(Settings.PREF_CLIPBOARD_USE_FILES, Defaults.PREF_CLIPBOARD_USE_FILES)
             if (uri == null || !saveUriData) return false
             try {
-                val cursor = context.contentResolver.query(uri, arrayOf(OpenableColumns.SIZE), null, null)
-                if (cursor?.moveToFirst() != true) return false
-                val size = cursor.getLong(0)
-                return size <= maxSize * 1000000 // maxSize is megabytes
+                context.contentResolver.query(uri, arrayOf(OpenableColumns.SIZE), null, null, null).use {
+                    if (it?.moveToFirst() != true) return false
+                    val size = it.getLong(0)
+                    return size <= maxSize * 1000000 // maxSize is megabytes
+                }
             } catch (e: Exception) {
                 Log.w(TAG, "error checking clip size", e) // happens with SecurityException: Permission Denial
                 return false
