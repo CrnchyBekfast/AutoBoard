@@ -211,6 +211,7 @@ class WordData(
     private val width = keyboard.mOccupiedWidth
 
     private val packageName = keyboard.mId.mEditorInfo.packageName
+    private val pointerData = PointerData.fromPointers(composedData.mInputPointers)
 
     private val timestamp = System.currentTimeMillis()
 
@@ -256,7 +257,7 @@ class WordData(
                 DictInfo(hash, dict.mDictType, dict.mLocale?.toLanguageTag())
             },
             filteredSuggestions.map { Suggestion(it.mWord, it.mOriginalScore, dictionariesInUsedSuggestions[it.mSourceDict]) },
-            PointerData.fromPointers(composedData.mInputPointers),
+            pointerData,
             keyboardInfo,
             activeMode,
             null
