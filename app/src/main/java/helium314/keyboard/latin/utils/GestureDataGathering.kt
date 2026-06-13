@@ -256,7 +256,8 @@ class WordData(
                 val hash = (dict as? BinaryDictionary)?.hash ?: (dict as? ReadOnlyBinaryDictionary)?.hash
                 DictInfo(hash, dict.mDictType, dict.mLocale?.toLanguageTag())
             },
-            filteredSuggestions.map { Suggestion(it.mWord, it.mOriginalScore, dictionariesInUsedSuggestions[it.mSourceDict]) },
+            // index not needed any more
+            filteredSuggestions.map { Suggestion(it.mWord, it.mOriginalScore /*, dictionariesInUsedSuggestions[it.mSourceDict]*/) },
             pointerData,
             keyboardInfo,
             activeMode,
@@ -383,7 +384,7 @@ data class GestureData(
 data class DictInfo(val hash: String?, val type: String, val language: String?)
 
 @Serializable
-data class Suggestion(val word: String, val score: Int, val dictIndex: Int? = null)
+data class Suggestion(val word: String, val score: Int)
 
 @Serializable
 data class PointerData(val id: Int, val x: Int, val y: Int, val millis: Int) {
