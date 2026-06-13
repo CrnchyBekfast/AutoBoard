@@ -76,7 +76,8 @@ class ClipboardDao private constructor(private val db: Database) {
         val extension = if (description.mimeTypeCount == 0) ""
             else ".${MimeTypeMap.getSingleton().getExtensionFromMimeType(description.getMimeType(0))}"
         val tempFile = File(context.filesDir, "temp_clip")
-        FileUtils.copyContentUriToNewFile(uri, context, tempFile)
+        tempFile.delete()
+        runCatching { FileUtils.copyContentUriToNewFile(uri, context, tempFile) }.onFailure { return }
 
         // we set the file name to the sha256 of the content to have virtually unique names and an easy way to find duplicates
         val sha256 = ChecksumCalculator.checksum(tempFile)
