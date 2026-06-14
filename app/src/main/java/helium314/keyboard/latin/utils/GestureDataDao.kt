@@ -208,12 +208,15 @@ class GestureDataDao(val db: Database) {
             exclusions.forEach { excludedWord ->
                 if (!result.contains(excludedWord, true)) return@forEach
                 runCatching {
-                    val data = Json.decodeFromString<GestureData>(result)
+                    val data = json.decodeFromString<GestureData>(result)
                     val newData = data.copy(suggestions = data.suggestions.filterNot { excludedWord.equals(it.word, true) })
                     result = newData.toJsonWithChecksum()
                 }
             }
             return result
         }
+
+        // deserialize with ignoreUnknownKeys because we removed dictIndex
+        private val json = Json { ignoreUnknownKeys = true }
     }
 }
