@@ -1266,11 +1266,14 @@ New dictionary:
      shown when background data gathering is enabled for the first time
      %1$s -> gesture_data_background_gathering_info
      %2$s -> background_gathering
+     %3$s -> dictionary_link_text ("here")
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_first_enable_dialog">
         Welcome to background data gathering!&lt;br&gt;
         Do you wish to add the &lt;i&gt;%1$s&lt;/i&gt; key to the toolbar?
         You can use it to control data gathering, read more about it using the &lt;i&gt;%2$s&lt;/i&gt; button.
+        &lt;br&gt;&lt;br&gt;
+        At by default, background collection is disabled for all apps. You can change it %3$s.
     </string>
     <!-- Button for adding the background_gathering toolbar key
      string will probably be removed once data gathering is finished (end of 2026 latest) -->

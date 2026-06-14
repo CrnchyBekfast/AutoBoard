@@ -51,9 +51,13 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.LinkInteractionListener
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.edit
@@ -319,12 +323,22 @@ fun BackgroundGatheringSettings() {
                 KeyboardSwitcher.getInstance().setThemeNeedsReload()
             },
             content = {
-                val text = stringResource(
+                val splitText = stringResource(
                     R.string.gesture_data_first_enable_dialog,
                     stringResource(R.string.gesture_data_background_gathering_info),
                     stringResource(R.string.background_gathering),
-                )
-                Text(AnnotatedString.fromHtml(text))
+                    "SPLITHERE"
+                ).split("SPLITHERE")
+                val text = buildAnnotatedString {
+                    // there probably is an easier way for this...
+                    append(AnnotatedString.fromHtml(splitText[0]))
+                    if (splitText.size == 1) return@buildAnnotatedString
+                    withLink(LinkAnnotation.Clickable("tag", linkInteractionListener = LinkInteractionListener { showIncludedAppsDialog = true })) {
+                        append(stringResource(R.string.dictionary_link_text))
+                    }
+                    append(AnnotatedString.fromHtml(splitText[1]))
+                }
+                Text(text)
             },
         )
     }
