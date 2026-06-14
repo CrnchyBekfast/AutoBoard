@@ -203,7 +203,7 @@ class WordData(
     val activeMode: Boolean,
     // first suggestion in background gathering, used to track later changes
     // may not be in SuggestionResults due to processing
-    var topSuggestion: SuggestedWords.SuggestedWordInfo? = null
+    val topSuggestion: SuggestedWords.SuggestedWordInfo? = null
 ) {
     // keyboard is not immutable, so better store potentially relevant information immediately
     private val keys = keyboard.sortedKeys
@@ -240,11 +240,18 @@ class WordData(
             if (match != null) targetWord = match.mWord
         }
 
+        val topWord = targetWord ?: topSuggestion?.word
         val filteredSuggestions = filterSuggestions(GestureDataGatheringSettings.getWordExclusions(context))
         // we want to store which dictionaries are used, and a dict index (in used dict list) for each suggestion
         var dictCount = 0
-        val dictionariesInUsedSuggestions = LinkedHashMap<Dictionary, Int>().apply { // linked because we need the order
+        val dictionariesInUsedSuggestions = LinkedHashMap<Dictionary, Int>().apply { // linked because we need the order (well, not any more...)
             filteredSuggestions.forEach { if (!containsKey(it.mSourceDict)) put(it.mSourceDict, dictCount++) }
+            // we always want a main dictionary
+            if (!activeMode && none { it.key.mDictType == Dictionary.TYPE_MAIN }) {
+                val word = suggestions.firstOrNull { it.mWord == topWord && it.isFromKnownMainDict(context) }
+                    ?: suggestions.firstOrNull { it.mWord.equals(topWord, true) && it.isFromKnownMainDict(context) }
+                word?.let { put(it.mSourceDict, dictCount++) }
+            }
         }
 
         val data = GestureData(
@@ -263,7 +270,7 @@ class WordData(
             activeMode,
             null
         )
-        scope.launch { dao.add(data, targetWord ?: topSuggestion?.word, timestamp) }
+        scope.launch { dao.add(data, topWord, timestamp) }
         if (!activeMode)
             scope.launch(Dispatchers.Main) { GestureDataGatheringSettings.informAboutTooManyBackgroundModeWords(context, dao) }
     }
