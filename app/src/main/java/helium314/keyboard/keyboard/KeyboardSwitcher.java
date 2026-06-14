@@ -624,7 +624,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
     }
 
     private void setBackgroundGatheringIndicatorPosition() {
-        if (mBackgroundGatheringIndicator.getVisibility() != View.VISIBLE) return;
+        if (mBackgroundGatheringIndicator == null || mBackgroundGatheringIndicator.getVisibility() != View.VISIBLE) return;
         if (mBackgroundGatheringIndicator.getLayoutParams() instanceof ViewGroup.MarginLayoutParams margin) {
             Keyboard kb = mKeyboardView.getKeyboard();
             if (kb != null)
