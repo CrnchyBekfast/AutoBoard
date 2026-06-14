@@ -59,25 +59,25 @@ class ClipboardDao private constructor(private val db: Database) {
         sort()
     }
 
-    fun addClip(timestamp: Long, pinned: Boolean, text: String) {
+    fun addClip(timestamp: Long, pinned: Boolean, text: String) = synchronized(this) {
         clearOldClips()
         val existingIndex = cache.indexOfFirst { it.text == text }
         if (existingIndex >= 0 && cache[existingIndex].timeStamp == timestamp)
-            return // nothing to do
+            return@synchronized // nothing to do
         if (existingIndex >= 0) {
             updateTimestampAt(existingIndex, timestamp)
-            return
+            return@synchronized
         }
         insertNewEntry(timestamp, pinned, text, null, null, null)
     }
 
-    fun addClipUri(timestamp: Long, pinned: Boolean, uri: Uri, description: ClipDescription, context: Context) {
+    fun addClipUri(timestamp: Long, pinned: Boolean, uri: Uri, description: ClipDescription, context: Context) = synchronized(this) {
         clearOldClips()
         val extension = if (description.mimeTypeCount == 0) ""
             else ".${MimeTypeMap.getSingleton().getExtensionFromMimeType(description.getMimeType(0))}"
         val tempFile = File(context.filesDir, "temp_clip")
         tempFile.delete()
-        runCatching { FileUtils.copyContentUriToNewFile(uri, context, tempFile) }.onFailure { return }
+        runCatching { FileUtils.copyContentUriToNewFile(uri, context, tempFile) }.onFailure { return@synchronized }
 
         // we set the file name to the sha256 of the content to have virtually unique names and an easy way to find duplicates
         val sha256 = ChecksumCalculator.checksum(tempFile)
@@ -88,7 +88,7 @@ class ClipboardDao private constructor(private val db: Database) {
             if (cache[existingIndex].timeStamp != timestamp)
                 updateTimestampAt(existingIndex, timestamp)
             tempFile.delete()
-            return
+            return@synchronized
         }
         tempFile.renameTo(file)
         // we could try getting a thumbnail using context.contentResolver.loadThumbnail(uri, Size(a, b), null)
@@ -157,7 +157,7 @@ class ClipboardDao private constructor(private val db: Database) {
 
     fun sort() = cache.sort()
 
-    fun togglePinned(id: Long) {
+    fun togglePinned(id: Long) = synchronized(this) {
         val entry = cache.first { it.id == id }
         entry.isPinned = !entry.isPinned
         entry.timeStamp = System.currentTimeMillis()
@@ -180,8 +180,8 @@ class ClipboardDao private constructor(private val db: Database) {
         delete(listOf(cache[index]))
     }
 
-    private fun delete(entries: List<ClipboardHistoryEntry>) {
-        if (entries.isEmpty()) return
+    private fun delete(entries: List<ClipboardHistoryEntry>) = synchronized(this) {
+        if (entries.isEmpty()) return@synchronized
         cache.removeAll(entries)
         db.writableDatabase.delete(TABLE, "$COLUMN_ID IN (${entries.joinToString(",") { it.id.toString() }})", null)
         entries.forEach { if (it.filename != null) File(clipFilesDir, it.filename).delete() }
