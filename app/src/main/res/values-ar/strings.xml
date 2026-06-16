@@ -543,7 +543,7 @@
     <string name="gesture_data_include_shared">ضمّن البيانات التي أُرسلت بالفعل</string>
     <string name="gesture_data_shared">أُرسلت</string>
     <string name="gesture_data_saving">يحفظ… %s %%</string>
-    <string name="gesture_data_first_enable_dialog">مرحبًا بك في ميزة جمع البيانات في الخلفية!&lt;br&gt; أترغب في إضافة المفتاح &lt;i&gt;%1$s&lt;/i&gt; إلى شريط الأدوات؟ يمكنك استخدامه للتحكم في عملية جمع البيانات، اقرأ المزيد عنه باستخدام الزر &lt;i&gt;%2$s&lt;/i&gt;.</string>
+    <string name="gesture_data_first_enable_dialog">مرحبًا بك في ميزة جمع البيانات في الخلفية!&lt;br&gt; أترغب في إضافة المفتاح &lt;i&gt;%1$s&lt;/i&gt; إلى شريط الأدوات؟ يمكنك استخدامه للتحكم في عملية جمع البيانات، اقرأ المزيد عنه باستخدام الزر &lt;i&gt;%2$s&lt;/i&gt;. &lt;br&gt;&lt;br&gt; افتراضيًا، تُعطّل ميزة \"جمع البيانات في الخلفية\" لجميع التطبيقات. يمكنك تغيير هذا الإعداد في %3$s.</string>
     <string name="gesture_data_add_key">أضف شريط الأدوات</string>
     <string name="gesture_data_no_known_dict">يقتصر جمع المعلومات في الخلفية على الكلمات الواردة من القواميس المدمجة أو المتوفرة في &lt;a href=%s&gt;مستودع القواميس&lt;/a&gt;. ولا يوجد لديك حاليًا أي قاموس من هذا النوع مُفعّل.</string>
     <string name="gesture_data_swipe_o_scope">أداة لتصور بيانات الإيماءات: &lt;a href=%s&gt;Swipe-O-Scope&lt;/a&gt;</string>

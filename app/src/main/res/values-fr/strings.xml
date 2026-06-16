@@ -539,7 +539,7 @@ Nouveau dictionnaire:
     <string name="gesture_data_include_shared">Inclure les données déjà soumises</string>
     <string name="gesture_data_shared">Soumis</string>
     <string name="gesture_data_saving">Enregistrement… %s%%</string>
-    <string name="gesture_data_first_enable_dialog">Bienvenue dans la collecte de données en arrière-plan !&lt;br&gt; Souhaitez-vous ajouter la touche &lt;i&gt;%1$s&lt;/i&gt; à la barre d\'outils ? Vous pouvez l\'utiliser pour contrôler la collecte de données. Pour en savoir plus, utilisez le bouton &lt;i&gt;%2$s&lt;/i&gt;.</string>
+    <string name="gesture_data_first_enable_dialog">Bienvenue dans la collecte de données en arrière-plan !&lt;br&gt; Souhaitez-vous ajouter la touche &lt;i&gt;%1$s&lt;/i&gt; à la barre d\'outils ? Vous pouvez l\'utiliser pour contrôler la collecte de données. Pour en savoir plus, utilisez le bouton &lt;i&gt;%2$s&lt;/i&gt;. &lt;br&gt;&lt;br&gt; Par défaut, la collecte en arrière-plan est désactivée pour toutes les applications. Vous pouvez modifier cela %3$s.</string>
     <string name="gesture_data_add_key">Ajouter la touche de la barre d\'outils</string>
     <string name="gesture_data_no_known_dict">La collecte de données en arrière-plan ne récupère que les mots provenant de dictionnaires intégrés ou disponibles dans le &lt;a href=%s&gt;référentiel de dictionnaires&lt;/a&gt;. Actuellement, vous n\'avez aucun dictionnaire de ce type activé.</string>
     <string name="gesture_data_swipe_o_scope">Outil pour visualiser les données gestuelles : &lt;a href=%s&gt;Swipe-O-Scope&lt;/a&gt;</string>

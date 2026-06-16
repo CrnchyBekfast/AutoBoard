@@ -499,4 +499,25 @@
     <string name="toolbar_only_with_hw_keyboard">הצגת סרגל הכלים בלבד בחיבור מקלדת פיזית</string>
     <string name="prefs_key_gap_scale">קנה-המידה של המרווח בין המקשים</string>
     <string name="floating" tools:keep="@string/floating">מקלדת צפה</string>
+    <string name="subtype_generic_4row">%s (4-שורות)</string>
+    <string name="gesture_data_swipe_o_scope">כלי לתצוגת נתוני מחוות: &lt;a href=%s&gt;Swipe-O-Scope&lt;/a&gt;</string>
+    <string name="gesture_data_no_known_dict">איסוף ברקע מתעד רק מילים ממילונים מובנים או אלה שקיימים במילוני &lt;a href=%s&gt;dictionaries repository&lt;/a&gt;. לא מופעל אצלך כרגע מילון כזה.</string>
+    <string name="gesture_data_add_key">הוספת פקד סרגל כלים</string>
+    <string name="gesture_data_first_enable_dialog">ברוך בואך לאיסוף נתונים ברקע!&lt;br&gt; האם ברצונך להוסיף את פקד &lt;i&gt;%1$s&lt;/i&gt; לסרגל הכלים? באפשרותך להשתמש בו לשליטה באיסוף הנתונים, לקריאה נוספת על כך ניתן ללחוץ על כפתור &lt;i&gt;%2$s&lt;/i&gt;. &lt;br&gt;&lt;br&gt; כברירת-מחדל, איסוף ברקע מושבת עבור כל היישומים. באפשרותך לשנות זאת %3$s.</string>
+    <string name="gesture_data_saving">שמירה… %s%%</string>
+    <string name="gesture_data_shared">הוגש</string>
+    <string name="gesture_data_include_shared">לכלול נתונים שכבר הוגשו</string>
+    <string name="gesture_data_show_background">הצגת נתוני הרקע</string>
+    <string name="gesture_data_show_active">הצגת הנתונים שנאספו באופן פעיל</string>
+    <string name="background_gathering" tools:keep="@string/background_gathering">איסוף נתונים ברקע</string>
+    <string name="gesture_data_long_press_select_hint">לחיצה ממושכת לבחירה</string>
+    <string name="gesture_data_background_exclude_words">החרגת מילה מהאיסוף ברקע</string>
+    <string name="gesture_data_background_position">מיקום: %s</string>
+    <string name="gesture_data_background_dictionary">מילון: %s</string>
+    <string name="gesture_data_background_excluded_words_button">ניהול מילים שהוחרגו</string>
+    <string name="gesture_data_background_apps_include_default">לכלול יישומים כברירת-מחדל</string>
+    <string name="gesture_data_background_apps">בחירת יישומים שייכללו באיסוף נתונים ברקע</string>
+    <string name="gesture_data_background_apps_button">ניהול היישומים שהותרו</string>
+    <string name="gesture_data_background_gathering_review_message">באמצעות מסך&lt;i&gt;%1$s&lt;/i&gt; באפשרותך לבחון ולסנן את הנתונים שנאספו, למחוק נתונים רגישים מדי לטעמך, ולשתף נתונים. פקדי המחיקה והשיתוף יפעלו על הנתונים המסוננים, או על הבחירה אם השתמשת בלחיצה ממושכת לבחירת מילים. (לתשומתלבך, הסמל ה\"רגיל\" של שיתוף מחוץ למסך ה&lt;i&gt;%1$s&lt;/i&gt; ישתף רק את הנתונים שבאיסוף הפעיל.)&lt;br&gt; הסדר של הנתונים המשותפים אקראי, כך שלא ניתן להסיק יותר מהמילים הפרטניות.&lt;br&gt; אם ברצונך לצפות בנתונים המלאים שנאספו למחווה כלשהי, באפשרותך לשתף אותם בקובץ, ולהטעין את הקובץ ב- &lt;a href=%2$s&gt;Swipe-O-Scope&lt;a&gt;.</string>
+    <string name="gesture_data_background_gathering_control_message">ללא תלות בהגדרות, איסוף ברקע של נתונים מושבת בעת שימוש במצב פרטיות. הוא מושבת גם לשדות קלט המסומנים כרגישים (סיסמאות, דוא\"ל, או כאשר שדה הקלט מבקש שהמקלדת לא תלמד את המילים). רק מילים שבמילון הראשי (מובנה או ממאגר המילונים &lt;a href=%5$s&gt;&lt;/a&gt;) יתועדו. &lt;br&gt;&lt;br&gt; Using &lt;i&gt;%1$s&lt;/i&gt; באפשרותך לבחור באילו יישומים ברצונך לאפשר איסוף ברקע של נתונים. הגדרת ברירת המחדל משביתה את כל היישומים, עם אפשרות בחירה להתיר פרטנית ליישום. לחילופין באפשרותך להפעיל איסוף ברקע לכל היישומים, ולהשביתו פרטנית ליישומים נבחרים. אפשרות זו נוחה יותר, אבל תאפשר אוטומטית איסוף נתונים מיישומים חדשים שמותקנים. הדבר עשוי לגרום לאיסוף נתונים בלתי צפויים. &lt;br&gt;&lt;br&gt; With &lt;i&gt;%2$s&lt;/i&gt; you can exclude specific sensitive words. When gesturing an excluded word, the indicator icon will still show the filled icon (\"data waiting to be saved\"), but the data will be discarded when normally it would be saved. Any blocked words that have already been saved before the word was blocked, will be discarded on exporting data.&lt;br&gt; Note that background gathering will only collect words that are already in a main dictionary, so the only words you will probably need to block are common words that could be used to personally identify you such as: your name, street, city, territory, etc. &lt;br&gt;&lt;br&gt; When &lt;i&gt;%3$s&lt;/i&gt; is enabled, data is saved only if you choose to do so manually using the &lt;i&gt;%4$s&lt;/i&gt; toolbar key (see below). If data is not saved, pending data will be deleted when changing input field or closing the keyboard.&lt;br&gt; App and word exclusions still apply in this mode. &lt;br&gt;&lt;br&gt; The &lt;i&gt;%4$s&lt;/i&gt; toolbar key can be used to control data gathering. The effect of a press depends on the current state: When background gathering is disabled, it will be enabled.&lt;br&gt; A long-press will disable gathering for five minutes.&lt;br&gt; You can re-enable background data gathering earlier with a normal key press.&lt;br&gt; When &lt;i&gt;%3$s&lt;/i&gt; is enabled, pending data will be saved.&lt;br&gt; Otherwise, pending data will be discarded.&lt;br&gt;</string>
 </resources>

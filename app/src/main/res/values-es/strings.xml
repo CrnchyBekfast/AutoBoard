@@ -534,7 +534,7 @@
     <string name="gesture_data_include_shared">Incluir los datos que ya fueron enviados</string>
     <string name="gesture_data_shared">enviado</string>
     <string name="gesture_data_saving">Guardando… %s%%</string>
-    <string name="gesture_data_first_enable_dialog">¡Bienvenido a la recopilación de datos en segundo plano! &lt;br&gt; ¿Desea agregar la clave &lt;i&gt;%1$s&lt;/i&gt; a la barra de herramientas? Puede usarlo para controlar la recopilación de datos. Lea más sobre esto usando el botón &lt;i&gt;%2$s&lt;/i&gt;.</string>
+    <string name="gesture_data_first_enable_dialog">¡Bienvenido a la recopilación de datos en segundo plano!&lt;br&gt; ¿Deseas añadir la clave &lt;i&gt;%1$s&lt;/i&gt; a la barra de herramientas? Puedes utilizarla para controlar la recopilación de datos; obtén más información al respecto mediante el botón &lt;i&gt;%2$s&lt;/i&gt;. &lt;br&gt;&lt;br&gt; De forma predeterminada, la recopilación en segundo plano está desactivada para todas las aplicaciones. Puedes cambiarlo %3$s.</string>
     <string name="gesture_data_add_key">Agregar tecla a la barra de herramientas</string>
     <string name="gesture_data_no_known_dict">La recopilación en segundo plano solo recoge palabras procedentes de diccionarios integrados o disponibles en el &lt;a href=%s&gt;repositorio de diccionarios&lt;/a&gt;. Actualmente no tienes este diccionario habilitado.</string>
     <string name="gesture_data_swipe_o_scope">Herramienta para visualizar datos de gestos: &lt;a href=%s&gt;Swipe-O-Scope&lt;/a&gt;</string>

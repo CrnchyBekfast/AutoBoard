@@ -574,7 +574,7 @@
     <string name="gesture_data_include_shared">Reeds ingediende gegevens opnemen</string>
     <string name="gesture_data_shared">ingediend</string>
     <string name="gesture_data_saving">Opslaan… %s%%</string>
-    <string name="gesture_data_first_enable_dialog">Welkom bij de verzameling van achtergrondgegevens!&lt;br&gt; Wilt u de toets &lt;i&gt;%1$s&lt;/i&gt; toevoegen aan de werkbalk? U kunt deze gebruiken om het verzamelen van gegevens te controleren, lees er meer over met behulp van de knop &lt;i&gt;%2$s&lt;/i&gt;.</string>
+    <string name="gesture_data_first_enable_dialog">Welkom bij de verzameling van achtergrondgegevens!&lt;br&gt; Wilt u de toets &lt;i&gt;%1$s&lt;/i&gt; toevoegen aan de werkbalk? U kunt deze gebruiken om het verzamelen van gegevens te controleren, lees er meer over met behulp van de knop &lt;i&gt;%2$s&lt;/i&gt;.&lt;br&gt;&lt;br&gt; Verzameling van gegevens in de achtergrond is standaard uitgeschakeld voor alle apps. U kunt het wijzigen bij %3$s.</string>
     <string name="gesture_data_add_key">Knop voor het toevoegen van achtergrond_verzameling in de werkbalk. Deze zal waarschijnlijk worden verwijderd zodra het verzamelen van gegevens is voltooid (uiterlijk eind 2026)</string>
     <string name="gesture_data_no_known_dict">Achtergrondverzameling verzamelt alleen woorden afkomstig uit woordenlijsten die zijn ingebouwd of beschikbaar zijn in de &lt;a href=%s&gt;woordenlijstenopslagplaats&lt;/a&gt;. Momenteel is een dergelijke woordenlijst niet ingeschakeld.</string>
     <string name="gesture_data_swipe_o_scope">Hulpmiddel voor het visualiseren van gebarengegevens: &lt;a href=%s&gt;Swipe-O-Scope&lt;/a&gt;</string>
