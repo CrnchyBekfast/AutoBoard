@@ -246,12 +246,8 @@ class WordData(
         var dictCount = 0
         val dictionariesInUsedSuggestions = LinkedHashMap<Dictionary, Int>().apply { // linked because we need the order (well, not any more...)
             filteredSuggestions.forEach { if (!containsKey(it.mSourceDict)) put(it.mSourceDict, dictCount++) }
-            // we always want a main dictionary
-            if (!activeMode && none { it.key.mDictType == Dictionary.TYPE_MAIN }) {
-                val word = suggestions.firstOrNull { it.mWord == topWord && it.isFromKnownMainDict(context) }
-                    ?: suggestions.firstOrNull { it.mWord.equals(topWord, true) && it.isFromKnownMainDict(context) }
-                word?.let { put(it.mSourceDict, dictCount++) }
-            }
+            // we always want all main known dictionaries
+            suggestions.forEach { if (!containsKey(it.mSourceDict) && it.isFromKnownMainDict(context)) put(it.mSourceDict, dictCount++) }
         }
 
         val data = GestureData(
