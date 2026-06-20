@@ -1273,7 +1273,8 @@ New dictionary:
         Do you wish to add the &lt;i&gt;%1$s&lt;/i&gt; key to the toolbar?
         You can use it to control data gathering, read more about it using the &lt;i&gt;%2$s&lt;/i&gt; button.
         &lt;br&gt;&lt;br&gt;
-        By default, background collection is disabled for all apps. You can change it %3$s.
+        By default, background collection is disabled for all apps. This means nothing will be collected until you chose which apps you allow.
+        You can change it %3$s.
     </string>
     <!-- Button for adding the background_gathering toolbar key
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
