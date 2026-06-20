@@ -67,6 +67,7 @@ public class KeyboardView extends View {
     private final Colors mColors;
     private float mKeyScaleForText;
     protected float mFontSizeMultiplier;
+    protected float mHintFontSizeMultiplier;
 
     // The maximum key label width in the proportion to the key width.
     private static final float MAX_LABEL_RATIO = 0.90f;
@@ -193,8 +194,9 @@ public class KeyboardView extends View {
         requestLayout();
         mFontSizeMultiplier = mKeyboard.mId.isEmojiKeyboard()
                 // In the case of EmojiKeyFit, the size of emojis is taken care of by the size of the keys
-                ? (Settings.getValues().mEmojiKeyFit? 1 : Settings.getValues().mFontSizeMultiplierEmoji)
+                ? (Settings.getValues().mEmojiKeyFit ? 1 : Settings.getValues().mFontSizeMultiplierEmoji)
                 : Settings.getValues().mFontSizeMultiplier;
+        mHintFontSizeMultiplier = Settings.getValues().mHintFontSizeMultiplier;
     }
 
     /**
@@ -458,7 +460,7 @@ public class KeyboardView extends View {
         Drawable hintIcon = (keyboard == null || !mShowsHints || hintLabel != null) ? null
                         : key.getHintIcon(keyboard.mIconsSet, params.mAnimAlpha);
         if (hintLabel != null && mShowsHints) {
-            paint.setTextSize(key.selectHintTextSize(params) * mFontSizeMultiplier); // maybe take sqrt to not have such extreme changes?
+            paint.setTextSize(key.selectHintTextSize(params) * mHintFontSizeMultiplier);
             paint.setColor(key.selectHintTextColor(params));
             // TODO: Should add a way to specify type face for hint letters
             paint.setTypeface(KeyboardTypeface.resolve(hintLabel, Typeface.DEFAULT_BOLD));
@@ -503,7 +505,7 @@ public class KeyboardView extends View {
                     : params.mHintLabelVerticalAdjustment * labelCharHeight;
             canvas.drawText(hintLabel, 0, hintLabel.length(), hintX, hintBaseline + adjustmentY, paint);
         } else if (hintIcon != null) {
-            int iconSize = (int) (key.selectHintTextSize(params) * mFontSizeMultiplier * mIconScaleFactor);
+            int iconSize = (int) (key.selectHintTextSize(params) * mHintFontSizeMultiplier);
             boolean isFunctionalKeyAndRoundedStyle = mColors.getThemeStyle().equals(STYLE_ROUNDED) && (key.hasFunctionalBackground() || key.hasActionKeyBackground());
             float hintX, hintBaseline;
             if (key.hasHintLabel()) {
