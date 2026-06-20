@@ -149,7 +149,7 @@ abstract class AndroidWordLevelSpellCheckerSession(private val mService: Android
             // Handle special patterns like email, URI, telephone number.
             val checkability = getCheckabilityInScript(text, script)
             val capitalizeType = StringUtils.getCapitalizationType(text)
-            if (CHECKABILITY_CHECKABLE != checkability)
+            if (Checkabiliy.CHECKABLE != checkability)
                 return getSuggestionInfoForUncheckable(text, capitalizeType, checkability)
 
             // Handle normal words.
@@ -204,13 +204,13 @@ abstract class AndroidWordLevelSpellCheckerSession(private val mService: Android
         }
     }
 
-    private fun getSuggestionInfoForUncheckable(text: String, capitalizeType: Int, checkability: Int): SuggestionsInfo {
-        if (checkability == CHECKABILITY_FIRST_LETTER_UNCHECKABLE || checkability == CHECKABILITY_TOO_MANY_NON_LETTERS)
+    private fun getSuggestionInfoForUncheckable(text: String, capitalizeType: Int, checkability: Checkabiliy): SuggestionsInfo {
+        if (checkability == Checkabiliy.FIRST_LETTER_UNCHECKABLE || checkability == Checkabiliy.TOO_MANY_NON_LETTERS)
             return AndroidSpellCheckerService.getNotInDictEmptySuggestions(false)
 
-        // CHECKABILITY_CONTAINS_PERIOD Typo should not be reported when text is a valid word followed by a single period (end of sentence).
+        // Checkabiliy.CONTAINS_PERIOD Typo should not be reported when text is a valid word followed by a single period (end of sentence).
         val periodOnlyAtLastIndex = text.indexOf(Constants.CODE_PERIOD.toChar()) == (text.length - 1)
-        if (checkability == CHECKABILITY_CONTAINS_PERIOD) {
+        if (checkability == Checkabiliy.CONTAINS_PERIOD) {
             val splitText = text.split(Constants.REGEXP_PERIOD.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             var allWordsAreValid = true
             // Validate all words on both sides of periods, skip empty tokens due to periods at first/last index
@@ -263,13 +263,6 @@ abstract class AndroidWordLevelSpellCheckerSession(private val mService: Android
             this[ScriptUtils.SCRIPT_ARMENIAN] = "(\\u0028|\\u0029|\\u0027|\\u2026|\\u055E|\\u055C|\\u055B|\\u055D|\\u058A|\\u2015|\\u00AB|\\u00BB|\\u002C|\\u0589|\\u2024)".toRegex()
         }
 
-        private const val CHECKABILITY_CHECKABLE = 0
-        private const val CHECKABILITY_TOO_MANY_NON_LETTERS = 1
-        private const val CHECKABILITY_CONTAINS_PERIOD = 2
-        private const val CHECKABILITY_EMAIL_OR_URL = 3
-        private const val CHECKABILITY_FIRST_LETTER_UNCHECKABLE = 4
-        private const val CHECKABILITY_TOO_SHORT = 5
-
         /**
          * Finds out whether a particular string should be filtered out of spell checking.
          *
@@ -283,18 +276,18 @@ abstract class AndroidWordLevelSpellCheckerSession(private val mService: Android
          * @param script the identifier for the script this spell checker recognizes
          * @return one of the FILTER_OUT_* constants above.
          */
-        private fun getCheckabilityInScript(text: String?, script: String): Int {
-            if (text.isNullOrEmpty()) return CHECKABILITY_TOO_SHORT
+        private fun getCheckabilityInScript(text: String?, script: String): Checkabiliy {
+            if (text.isNullOrEmpty()) return Checkabiliy.TOO_SHORT
             if (text.length == 1)
-                return if (isLetterPartOfScript(text.codePointAt(0), script)) CHECKABILITY_TOO_SHORT
-                else CHECKABILITY_TOO_MANY_NON_LETTERS
+                return if (isLetterPartOfScript(text.codePointAt(0), script)) Checkabiliy.TOO_SHORT
+                else Checkabiliy.TOO_MANY_NON_LETTERS
 
             // TODO: check if an equivalent processing can't be done more quickly with a compiled regexp.
             // Filter by first letter
             val firstCodePoint = text.codePointAt(0)
             // Filter out words that don't start with a letter or an apostrophe
             if (!isLetterPartOfScript(firstCodePoint, script) && '\''.code != firstCodePoint)
-                return CHECKABILITY_FIRST_LETTER_UNCHECKABLE
+                return Checkabiliy.FIRST_LETTER_UNCHECKABLE
 
             // Filter contents
             val length = text.length
@@ -306,21 +299,21 @@ abstract class AndroidWordLevelSpellCheckerSession(private val mService: Android
                 // Any word containing a SLASH is probably either an ad-hoc combination of two
                 // words or a URI - in either case we don't want to spell check that
                 if (Constants.CODE_COMMERCIAL_AT == codePoint || Constants.CODE_SLASH == codePoint) {
-                    return CHECKABILITY_EMAIL_OR_URL
+                    return Checkabiliy.EMAIL_OR_URL
                 }
                 // If the string contains a period, native returns strange suggestions (it seems
                 // to return suggestions for everything up to the period only and to ignore the
                 // rest), so we suppress lookup if there is a period.
                 // TODO: investigate why native returns these suggestions and remove this code.
                 if (Constants.CODE_PERIOD == codePoint) {
-                    return CHECKABILITY_CONTAINS_PERIOD
+                    return Checkabiliy.CONTAINS_PERIOD
                 }
                 if (isLetterPartOfScript(codePoint, script)) ++letterCount
                 i = text.offsetByCodePoints(i, 1)
             }
             // Guestimate heuristic: perform spell checking if at least 3/4 of the characters
             // in this word are letters
-            return if (letterCount * 4 < length * 3) CHECKABILITY_TOO_MANY_NON_LETTERS else CHECKABILITY_CHECKABLE
+            return if (letterCount * 4 < length * 3) Checkabiliy.TOO_MANY_NON_LETTERS else Checkabiliy.CHECKABLE
         }
 
         private fun getResult(
@@ -355,6 +348,8 @@ abstract class AndroidWordLevelSpellCheckerSession(private val mService: Android
     }
 
     private class Result(val mSuggestions: Array<String?>?, val mHasRecommendedSuggestions: Boolean)
+
+    private enum class Checkabiliy { CHECKABLE, TOO_MANY_NON_LETTERS, CONTAINS_PERIOD, EMAIL_OR_URL, FIRST_LETTER_UNCHECKABLE, TOO_SHORT }
 
     // todo: this is unused...
     protected class SuggestionsParams(val mSuggestions: Array<String?>?, val mFlags: Int)
