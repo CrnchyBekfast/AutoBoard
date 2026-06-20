@@ -146,6 +146,10 @@
     <string name="auto_correct_shortcuts">Auto-correct shortcuts</string>
     <!-- Description for auto_correct_shortcuts -->
     <string name="auto_correct_shortcuts_summary">When enabled shortcuts might be expanded by autocorrect</string>
+    <!-- Option to enable auto correction for for capitalized suggestions (by pressing shift) -->
+    <string name="auto_correct_capitalized_suggestions">Auto-correct capitalized suggestions</string>
+    <!-- Description for auto_correct_capitalized_suggestions -->
+    <string name="auto_correct_capitalized_suggestions_description">After pressing shift to capitalize suggestions, auto-correct will trigger</string>
     <!-- Option to undo auto correction with backspace -->
     <string name="backspace_reverts_autocorrect">Backspace reverts autocorrect</string>
     <!-- Option to disable auto correction. -->

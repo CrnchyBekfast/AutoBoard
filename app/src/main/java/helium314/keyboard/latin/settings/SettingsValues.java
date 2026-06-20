@@ -157,6 +157,7 @@ public class SettingsValues {
     public final boolean mAutoCorrectionEnabledPerUserSettings;
     public final boolean mAutoCorrectEnabled;
     public final float mAutoCorrectionThreshold;
+    public final boolean mAutoCorrectCapitalizedSuggestion;
     public final boolean mBackspaceRevertsAutocorrect;
     public final int mScoreLimitForAutocorrect;
     public final boolean mAutoCorrectShortcuts;
@@ -228,6 +229,7 @@ public class SettingsValues {
                 ? 0.5f - 0.5f * (float)Math.pow(autoCorrectConfidence, 0.33)
                 : Float.MAX_VALUE;
         mScoreLimitForAutocorrect = (int)((1.14 - 0.2 * Math.pow(autoCorrectConfidence + 0.47, 3.5)) * 900000);
+        mAutoCorrectCapitalizedSuggestion = prefs.getBoolean(Settings.PREF_AUTOCORRECT_CAPITALIZED_SUGGESTION, Defaults.PREF_AUTOCORRECT_CAPITALIZED_SUGGESTION);
         mAutoCorrectShortcuts = prefs.getBoolean(Settings.PREF_AUTOCORRECT_SHORTCUTS, Defaults.PREF_AUTOCORRECT_SHORTCUTS);
         mBackspaceRevertsAutocorrect = prefs.getBoolean(Settings.PREF_BACKSPACE_REVERTS_AUTOCORRECT, Defaults.PREF_BACKSPACE_REVERTS_AUTOCORRECT);
         mBigramPredictionEnabled = prefs.getBoolean(Settings.PREF_BIGRAM_PREDICTIONS, Defaults.PREF_BIGRAM_PREDICTIONS);
