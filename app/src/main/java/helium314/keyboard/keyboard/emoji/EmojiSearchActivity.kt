@@ -190,13 +190,13 @@ class EmojiSearchActivity : ComponentActivity() {
                         val focusRequester = remember { FocusRequester() }
                         var text by remember { mutableStateOf(TextFieldValue(searchText, selection = TextRange(searchText.length))) }
                         val textFieldColors = TextFieldDefaults.colors().copy(
-                            unfocusedContainerColor = Color(colors.get(ColorType.FUNCTIONAL_KEY_BACKGROUND)),
-                            unfocusedTextColor = Color(colors.get(ColorType.FUNCTIONAL_KEY_TEXT)),
-                            cursorColor = Color(colors.get(ColorType.FUNCTIONAL_KEY_TEXT)),
-                            unfocusedLeadingIconColor = Color(colors.get(ColorType.FUNCTIONAL_KEY_TEXT)),
-                            unfocusedTrailingIconColor = Color(colors.get(ColorType.FUNCTIONAL_KEY_TEXT)),
-                            unfocusedPlaceholderColor = lerp(Color(colors.get(ColorType.FUNCTIONAL_KEY_BACKGROUND)),
-                                Color(colors.get(ColorType.FUNCTIONAL_KEY_TEXT)), 0.5f))
+                            unfocusedContainerColor = Color(colors.get(ColorType.EMOJI_SEARCH_BACKGROUND)),
+                            unfocusedTextColor = Color(colors.get(ColorType.EMOJI_SEARCH_TEXT)),
+                            cursorColor = Color(colors.get(ColorType.EMOJI_SEARCH_TEXT)),
+                            unfocusedLeadingIconColor = Color(colors.get(ColorType.EMOJI_SEARCH_TEXT)),
+                            unfocusedTrailingIconColor = Color(colors.get(ColorType.EMOJI_SEARCH_TEXT)),
+                            unfocusedPlaceholderColor = lerp(Color(colors.get(ColorType.EMOJI_SEARCH_BACKGROUND)),
+                                Color(colors.get(ColorType.EMOJI_SEARCH_TEXT)), 0.5f))
                         CompositionLocalProvider(
                             LocalTextSelectionColors provides textFieldColors.textSelectionColors,
                             LocalTextStyle provides LocalTextStyle.current.copy(fontFamily = fontFamily),
