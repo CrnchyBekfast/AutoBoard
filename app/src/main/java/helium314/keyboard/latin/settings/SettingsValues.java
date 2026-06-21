@@ -22,7 +22,7 @@ import helium314.keyboard.compat.ConfigurationCompatKt;
 import helium314.keyboard.compat.IsLockedCompatKt;
 import helium314.keyboard.keyboard.KeyboardActionListener;
 import helium314.keyboard.keyboard.KeyboardTheme;
-import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfosKt;
+import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfos;
 import helium314.keyboard.latin.InputAttributes;
 import helium314.keyboard.latin.PunctuationSuggestions;
 import helium314.keyboard.latin.R;
@@ -303,7 +303,7 @@ public class SettingsValues {
             mOneHandedModeScale = 1f;
         mSecondaryLocales = SubtypeUtilsKt.getSecondaryLocales(selectedSubtype.getExtraValue());
         mShowMorePopupKeys = SubtypeUtilsKt.getMoreKeys(selectedSubtype, prefs,
-            selectedSubtype.isAsciiCapable() ? Defaults.PREF_MORE_POPUP_KEYS : LocaleKeyboardInfosKt.POPUP_KEYS_NORMAL);
+            selectedSubtype.isAsciiCapable() ? Defaults.PREF_MORE_POPUP_KEYS : LocaleKeyboardInfos.POPUP_KEYS_NORMAL);
         mColors = KeyboardTheme.getColorsForCurrentTheme(context);
 
         mPopupKeyOrder = SubtypeUtilsKt.getPopupKeyOrder(selectedSubtype, prefs);

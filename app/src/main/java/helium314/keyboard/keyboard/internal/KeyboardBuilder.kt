@@ -15,7 +15,7 @@ import helium314.keyboard.keyboard.Keyboard
 import helium314.keyboard.keyboard.KeyboardId
 import helium314.keyboard.keyboard.internal.keyboard_parser.EmojiParser
 import helium314.keyboard.keyboard.internal.keyboard_parser.KeyboardParser
-import helium314.keyboard.keyboard.internal.keyboard_parser.addLocaleKeyTextsToParams
+import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfos
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.Constants
@@ -69,7 +69,7 @@ open class KeyboardBuilder<KP : KeyboardParams>(protected val mContext: Context,
         mParams.mProximityCharsCorrectionEnabled = mParams.mId.mElementId == KeyboardId.ELEMENT_ALPHABET
                 || (mParams.mId.isAlphabetKeyboard && !mParams.mId.mSubtype.hasExtraValue(Constants.Subtype.ExtraValue.NO_SHIFT_PROXIMITY_CORRECTION))
 
-        addLocaleKeyTextsToParams(mContext, mParams, sv.mShowMorePopupKeys)
+        LocaleKeyboardInfos.addLocaleKeyTextsToParams(mContext, mParams, sv.mShowMorePopupKeys)
         mParams.mPopupKeyOrder.addAll(sv.mPopupKeyOrder)
         // add label source only if popup key type enabled
         sv.mPopupKeyHintOrder.forEach { if (it in sv.mPopupKeyOrder) mParams.mPopupKeyHintOrder.add(it) }

@@ -16,8 +16,7 @@ import helium314.keyboard.keyboard.internal.PopupKeySpec
 import helium314.keyboard.keyboard.internal.TouchPositionCorrection
 import helium314.keyboard.keyboard.internal.UniqueKeysCache
 import helium314.keyboard.keyboard.internal.keyboard_parser.LayoutParser
-import helium314.keyboard.keyboard.internal.keyboard_parser.POPUP_KEYS_NORMAL
-import helium314.keyboard.keyboard.internal.keyboard_parser.addLocaleKeyTextsToParams
+import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfos
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.LatinIME
 import helium314.keyboard.latin.RichInputMethodSubtype
@@ -53,7 +52,7 @@ class ParserTest {
         params.mId = KeyboardLayoutSet.getFakeKeyboardId(KeyboardId.ELEMENT_ALPHABET)
         params.mPopupKeyOrder.add(POPUP_KEYS_LAYOUT)
         params.mPopupKeyHintOrder.add(POPUP_KEYS_LAYOUT)
-        addLocaleKeyTextsToParams(latinIME, params, POPUP_KEYS_NORMAL)
+        LocaleKeyboardInfos.addLocaleKeyTextsToParams(latinIME, params, LocaleKeyboardInfos.POPUP_KEYS_NORMAL)
     }
 
     @Test fun simpleParser() {

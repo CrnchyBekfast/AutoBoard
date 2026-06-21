@@ -8,8 +8,7 @@ import helium314.keyboard.keyboard.KeyboardLayoutSet
 import helium314.keyboard.keyboard.KeyboardSwitcher
 import helium314.keyboard.keyboard.internal.KeyboardParams
 import helium314.keyboard.keyboard.internal.keyboard_parser.LayoutParser
-import helium314.keyboard.keyboard.internal.keyboard_parser.POPUP_KEYS_NORMAL
-import helium314.keyboard.keyboard.internal.keyboard_parser.addLocaleKeyTextsToParams
+import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfos
 import helium314.keyboard.latin.common.Constants.Separators
 import helium314.keyboard.latin.common.Constants.Subtype.ExtraValue.KEYBOARD_LAYOUT_SET
 import helium314.keyboard.latin.common.decodeBase36
@@ -32,7 +31,7 @@ object LayoutUtilsCustom {
         val params = KeyboardParams()
         params.mId = KeyboardLayoutSet.getFakeKeyboardId(KeyboardId.ELEMENT_ALPHABET)
         params.mPopupKeyOrder.add(POPUP_KEYS_LAYOUT)
-        addLocaleKeyTextsToParams(context, params, POPUP_KEYS_NORMAL)
+        LocaleKeyboardInfos.addLocaleKeyTextsToParams(context, params, LocaleKeyboardInfos.POPUP_KEYS_NORMAL)
         try {
             if (layoutContent.trimStart().startsWith("[") || layoutContent.trimStart().startsWith("//")) {
                 val keys = LayoutParser.parseJsonString(layoutContent).map { row -> row.mapNotNull { it.compute(params)?.toKeyParams(params) } }
