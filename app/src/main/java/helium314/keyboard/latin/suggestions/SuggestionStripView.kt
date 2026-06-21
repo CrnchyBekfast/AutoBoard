@@ -175,6 +175,11 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
                     pinnedKeyInToolbar.background = enabledToolKeyBackground
             }
         }
+        toolbarContainer.doOnNextLayout {
+            // set min with of the toolbar so the weight of the toolbar keys actually does something
+            // todo: results in requestLayout() improperly called by android.widget.LinearLayout during layout: running second layout pass
+            toolbar.minimumWidth = toolbarContainer.width
+        }
 
         updateKeys()
     }
@@ -549,6 +554,7 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     private fun setupKey(view: ImageButton, colors: Colors) {
         view.setOnClickListener(this)
         view.setOnLongClickListener(this)
+        (view.layoutParams as LinearLayout.LayoutParams).weight = 1f
         colors.setColor(view, ColorType.TOOL_BAR_KEY)
         colors.setBackground(view, ColorType.STRIP_BACKGROUND)
     }
