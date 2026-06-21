@@ -157,7 +157,7 @@ public final class EmojiPalettesView extends LinearLayout
 
         @Override
         public long getItemId(int position) {
-            return mEmojiCategory.getShownCategories().get(position).mCategoryId;
+            return mEmojiCategory.getShownCategories().get(position).getCategoryId();
         }
 
         private static RecyclerView getRecyclerView(View view) {
@@ -251,8 +251,8 @@ public final class EmojiPalettesView extends LinearLayout
         mEmojiCategory.initialize();
         mTabStrip = (LinearLayout) KeyboardSwitcher.getInstance().getEmojiTabStrip();
         if (Settings.getValues().mSecondaryStripVisible) {
-            for (final EmojiCategory.CategoryProperties properties : mEmojiCategory.getShownCategories()) {
-                addTab(mTabStrip, properties.mCategoryId);
+            for (EmojiCategory.CategoryProperties properties : mEmojiCategory.getShownCategories()) {
+                addTab(mTabStrip, properties.getCategoryId());
             }
         }
 
