@@ -23,12 +23,12 @@ import java.util.concurrent.ConcurrentHashMap
 import androidx.core.content.edit
 
 internal class EmojiCategory(private val context: Context, private val layoutSet: KeyboardLayoutSet, emojiPaletteViewAttr: TypedArray) {
-    inner class CategoryProperties(val categoryId: Int) {
+    inner class CategoryProperties(val category: Category) {
         var mPageCount = -1
 
         val pageCount: Int
             get() {
-                if (mPageCount < 0) mPageCount = computeCategoryPageCount(categoryId)
+                if (mPageCount < 0) mPageCount = computeCategoryPageCount(category)
                 return mPageCount
             }
     }
@@ -36,30 +36,30 @@ internal class EmojiCategory(private val context: Context, private val layoutSet
     private val prefs = context.prefs()
     private val maxRecentsKeyCount = context.resources.getInteger(R.integer.config_emoji_keyboard_max_recents_key_count)
 
-    private val categoryTabIconId = IntArray(categoryTabIconAttr.size) { i ->
-        emojiPaletteViewAttr.getResourceId(categoryTabIconAttr[i], 0)
+    private val categoryTabIconId = IntArray(Category.entries.size) { i ->
+        emojiPaletteViewAttr.getResourceId(Category.entries[i].iconAttr, 0)
     }
 
     val shownCategories = listOfNotNull(
-        CategoryProperties(ID_RECENTS),
-        CategoryProperties(ID_SMILEYS_EMOTION),
-        CategoryProperties(ID_PEOPLE_BODY),
-        CategoryProperties(ID_ANIMALS_NATURE),
-        CategoryProperties(ID_FOOD_DRINK),
-        CategoryProperties(ID_TRAVEL_PLACES),
-        CategoryProperties(ID_ACTIVITIES),
-        CategoryProperties(ID_OBJECTS),
-        CategoryProperties(ID_SYMBOLS),
-        if (canShowFlagEmoji()) CategoryProperties(ID_FLAGS) else null,
-        CategoryProperties(ID_EMOTICONS)
+        CategoryProperties(Category.RECENTS),
+        CategoryProperties(Category.SMILEYS),
+        CategoryProperties(Category.PEOPLE),
+        CategoryProperties(Category.NATURE),
+        CategoryProperties(Category.FOOD),
+        CategoryProperties(Category.TRAVEL_PLACES),
+        CategoryProperties(Category.ACTIVITIES),
+        CategoryProperties(Category.OBJECTS),
+        CategoryProperties(Category.SYMBOLS),
+        if (canShowFlagEmoji()) CategoryProperties(Category.FLAGS) else null,
+        CategoryProperties(Category.EMOTICONS)
     )
 
     private val categoryKeyboardMap = ConcurrentHashMap<Long, DynamicGridKeyboard>()
 
-    var currentCategoryId = ID_UNSPECIFIED
+    var currentCategory: Category = defaultCategory
         set(value) {
             field = value
-            prefs.edit { putInt(Settings.PREF_LAST_SHOWN_EMOJI_CATEGORY_ID, value) }
+            prefs.edit { putInt(Settings.PREF_LAST_SHOWN_EMOJI_CATEGORY_ID, value.ordinal) }
         }
 
     var currentCategoryPageId = 0
@@ -69,18 +69,17 @@ internal class EmojiCategory(private val context: Context, private val layoutSet
         }
 
     fun initialize() {
-        val defaultCategoryId = ID_SMILEYS_EMOTION
-        val recentsKbd = getKeyboard(ID_RECENTS, 0)
-        currentCategoryId = prefs.getInt(Settings.PREF_LAST_SHOWN_EMOJI_CATEGORY_ID, defaultCategoryId)
+        val recentsKbd = getKeyboard(Category.RECENTS, 0)
+        currentCategory = Category.entries[prefs.getInt(Settings.PREF_LAST_SHOWN_EMOJI_CATEGORY_ID, defaultCategory.ordinal)]
         currentCategoryPageId =
             prefs.getInt(Settings.PREF_LAST_SHOWN_EMOJI_CATEGORY_PAGE_ID, Defaults.PREF_LAST_SHOWN_EMOJI_CATEGORY_PAGE_ID)
-        if (!isShownCategoryId(currentCategoryId)) {
-            currentCategoryId = defaultCategoryId
-        } else if (currentCategoryId == ID_RECENTS && recentsKbd.sortedKeys.isEmpty()) {
-            currentCategoryId = defaultCategoryId
+        if (!isShownCategory(currentCategory)) {
+            currentCategory = defaultCategory
+        } else if (currentCategory == Category.RECENTS && recentsKbd.sortedKeys.isEmpty()) {
+            currentCategory = defaultCategory
         }
 
-        if (currentCategoryPageId >= computeCategoryPageCount(currentCategoryId)) {
+        if (currentCategoryPageId >= computeCategoryPageCount(currentCategory)) {
             currentCategoryPageId = 0
         }
     }
@@ -90,86 +89,86 @@ internal class EmojiCategory(private val context: Context, private val layoutSet
         for (props in shownCategories) props.mPageCount = -1 // reset page count in case size (number of keys per row) changed
     }
 
-    private fun isShownCategoryId(categoryId: Int): Boolean {
+    private fun isShownCategory(category: Category): Boolean {
         for (prop in shownCategories) {
-            if (prop.categoryId == categoryId) {
+            if (prop.category == category) {
                 return true
             }
         }
         return false
     }
 
-    fun getCategoryTabIcon(categoryId: Int) = categoryTabIconId[categoryId]
+    fun getCategoryTabIcon(category: Category) = categoryTabIconId[category.ordinal]
 
-    fun getAccessibilityDescription(categoryId: Int) = context.getString(categoryElement[categoryId].descriptionResId)
+    fun getAccessibilityDescription(category: Category) = context.getString(category.element.descriptionResId)
 
-    val currentCategoryPageCount get() = getCategoryPageCount(currentCategoryId)
+    val currentCategoryPageCount get() = getCategoryPageCount(currentCategory)
 
-    fun getCategoryPageCount(categoryId: Int): Int {
+    fun getCategoryPageCount(category: Category): Int {
         for (prop in shownCategories) {
-            if (prop.categoryId == categoryId) {
+            if (prop.category == category) {
                 return prop.pageCount
             }
         }
-        Log.w(TAG, "Invalid category id: $categoryId")
+        Log.w(TAG, "Invalid category: $category")
         // Should not reach here.
         return 0
     }
 
-    val isInRecentTab get() = currentCategoryId == ID_RECENTS
+    val isInRecentTab get() = currentCategory == Category.RECENTS
 
-    fun getTabIdFromCategoryId(categoryId: Int): Int {
-        val i = shownCategories.indexOfFirst { it.categoryId == categoryId }
+    fun getTabIdFromCategoryId(category: Category): Int {
+        val i = shownCategories.indexOfFirst { it.category == category }
         return if (i == -1) 0 else i
     }
 
-    val recentTabId get() = getTabIdFromCategoryId(ID_RECENTS)
+    val recentTabId get() = getTabIdFromCategoryId(Category.RECENTS)
 
-    private fun computeCategoryPageCount(categoryId: Int): Int {
-        val keyboard = layoutSet.getKeyboard(categoryElement[categoryId])
+    private fun computeCategoryPageCount(category: Category): Int {
+        val keyboard = layoutSet.getKeyboard(category.element)
         return (keyboard.sortedKeys.size - 1) / computeMaxKeyCountPerPage() + 1
     }
 
     // Returns a keyboard from the recycler view's adapter position.
-    fun getKeyboardFromAdapterPosition(categoryId: Int, position: Int): DynamicGridKeyboard? {
-        if (position >= 0 && position < getCategoryPageCount(categoryId)) {
-            return getKeyboard(categoryId, position)
+    fun getKeyboardFromAdapterPosition(category: Category, position: Int): DynamicGridKeyboard? {
+        if (position >= 0 && position < getCategoryPageCount(category)) {
+            return getKeyboard(category, position)
         }
-        Log.w(TAG, "invalid position for categoryId : $categoryId")
+        Log.w(TAG, "invalid position for category : $category")
         return null
     }
 
-    fun getKeyboard(categoryId: Int, id: Int): DynamicGridKeyboard {
+    fun getKeyboard(category: Category, id: Int): DynamicGridKeyboard {
         synchronized(categoryKeyboardMap) {
-            val categoryKeyboardMapKey = getCategoryKeyboardMapKey(categoryId, id)
+            val categoryKeyboardMapKey = getCategoryKeyboardMapKey(category, id)
             categoryKeyboardMap[categoryKeyboardMapKey]?.let { return it }
 
             val currentWidth = ResourceUtils.getKeyboardWidth(context, Settings.getValues())
-            if (categoryId == ID_RECENTS) {
+            if (category == Category.RECENTS) {
                 val kbd = DynamicGridKeyboard.ofKeyCount(
                     prefs,
                     layoutSet.getKeyboard(KeyboardElement.EMOJI_RECENTS),
-                    maxRecentsKeyCount, categoryId, currentWidth
+                    maxRecentsKeyCount, category == Category.RECENTS, currentWidth
                 )
                 categoryKeyboardMap[categoryKeyboardMapKey] = kbd
                 kbd.loadRecentKeys(categoryKeyboardMap.values)
                 return kbd
             }
 
-            val keyboard = layoutSet.getKeyboard(categoryElement[categoryId])
+            val keyboard = layoutSet.getKeyboard(category.element)
             val keyCountPerPage = computeMaxKeyCountPerPage()
             val sortedKeysPages = sortKeysGrouped(keyboard.sortedKeys, keyCountPerPage)
             for (pageId in sortedKeysPages.indices) {
                 val tempKeyboard = DynamicGridKeyboard.ofKeyCount(prefs,
                     layoutSet.getKeyboard(KeyboardElement.EMOJI_RECENTS),
-                    keyCountPerPage, categoryId, currentWidth)
+                    keyCountPerPage, category == Category.RECENTS, currentWidth)
                 for (emojiKey in sortedKeysPages[pageId]) {
                     if (emojiKey == null) {
                         break
                     }
                     tempKeyboard.addKeyLast(emojiKey)
                 }
-                categoryKeyboardMap[getCategoryKeyboardMapKey(categoryId, pageId)] = tempKeyboard
+                categoryKeyboardMap[getCategoryKeyboardMapKey(category, pageId)] = tempKeyboard
             }
             return categoryKeyboardMap[categoryKeyboardMapKey]!!
         }
@@ -178,58 +177,33 @@ internal class EmojiCategory(private val context: Context, private val layoutSet
     private fun computeMaxKeyCountPerPage(): Int {
         val tempKeyboard = DynamicGridKeyboard.ofKeyCount(prefs,
             layoutSet.getKeyboard(KeyboardElement.EMOJI_RECENTS),
-            0, 0, ResourceUtils.getKeyboardWidth(context, Settings.getValues())
+            0, true, ResourceUtils.getKeyboardWidth(context, Settings.getValues())
         )
         return MAX_LINE_COUNT_PER_PAGE * tempKeyboard.occupiedColumnCount
     }
 
+    enum class Category(val element: KeyboardElement, val iconAttr: Int) {
+        RECENTS(KeyboardElement.EMOJI_RECENTS, R.styleable.EmojiPalettesView_iconEmojiRecentsTab),
+        SMILEYS(KeyboardElement.EMOJI_SMILEYS, R.styleable.EmojiPalettesView_iconEmojiSmileysTab),
+        PEOPLE(KeyboardElement.EMOJI_PEOPLE, R.styleable.EmojiPalettesView_iconEmojiPeopleTab),
+        NATURE(KeyboardElement.EMOJI_NATURE, R.styleable.EmojiPalettesView_iconEmojiNatureTab),
+        FOOD(KeyboardElement.EMOJI_FOOD, R.styleable.EmojiPalettesView_iconEmojiFoodTab),
+        TRAVEL_PLACES(KeyboardElement.EMOJI_TRAVEL_PLACES, R.styleable.EmojiPalettesView_iconEmojiTravelPlacesTab),
+        ACTIVITIES(KeyboardElement.EMOJI_ACTIVITIES, R.styleable.EmojiPalettesView_iconEmojiActivitiesTab),
+        OBJECTS(KeyboardElement.EMOJI_OBJECTS, R.styleable.EmojiPalettesView_iconEmojiObjectsTab),
+        SYMBOLS(KeyboardElement.EMOJI_SYMBOLS, R.styleable.EmojiPalettesView_iconEmojiSymbolsTab),
+        FLAGS(KeyboardElement.EMOJI_FLAGS, R.styleable.EmojiPalettesView_iconEmojiFlagsTab),
+        EMOTICONS(KeyboardElement.EMOJI_EMOTICONS, R.styleable.EmojiPalettesView_iconEmojiEmoticonsTab)
+    }
+
     companion object {
         private val TAG = EmojiCategory::class.java.simpleName
-        private const val ID_UNSPECIFIED = -1
-        const val ID_RECENTS: Int = 0
-        private const val ID_SMILEYS_EMOTION = 1
-        private const val ID_PEOPLE_BODY = 2
-        private const val ID_ANIMALS_NATURE = 3
-        private const val ID_FOOD_DRINK = 4
-        private const val ID_TRAVEL_PLACES = 5
-        private const val ID_ACTIVITIES = 6
-        private const val ID_OBJECTS = 7
-        private const val ID_SYMBOLS = 8
-        private const val ID_FLAGS = 9
-        private const val ID_EMOTICONS = 10
+        private val defaultCategory = Category.SMILEYS
 
         private const val MAX_LINE_COUNT_PER_PAGE = 3
 
-        private val categoryTabIconAttr = intArrayOf(
-            R.styleable.EmojiPalettesView_iconEmojiRecentsTab,
-            R.styleable.EmojiPalettesView_iconEmojiCategory1Tab,
-            R.styleable.EmojiPalettesView_iconEmojiCategory2Tab,
-            R.styleable.EmojiPalettesView_iconEmojiCategory3Tab,
-            R.styleable.EmojiPalettesView_iconEmojiCategory4Tab,
-            R.styleable.EmojiPalettesView_iconEmojiCategory5Tab,
-            R.styleable.EmojiPalettesView_iconEmojiCategory6Tab,
-            R.styleable.EmojiPalettesView_iconEmojiCategory7Tab,
-            R.styleable.EmojiPalettesView_iconEmojiCategory8Tab,
-            R.styleable.EmojiPalettesView_iconEmojiCategory9Tab,
-            R.styleable.EmojiPalettesView_iconEmojiCategory10Tab
-        )
-
-        private val categoryElement = arrayOf(
-            KeyboardElement.EMOJI_RECENTS,
-            KeyboardElement.EMOJI_SMILEY,
-            KeyboardElement.EMOJI_PEOPLE,
-            KeyboardElement.EMOJI_NATURE,
-            KeyboardElement.EMOJI_FOOD,
-            KeyboardElement.EMOJI_TRAVEL_PLACES,
-            KeyboardElement.EMOJI_ACTIVITIES,
-            KeyboardElement.EMOJI_OBJECTS,
-            KeyboardElement.EMOJI_SYMBOLS,
-            KeyboardElement.EMOJI_FLAGS,
-            KeyboardElement.EMOJI_EMOTICONS
-        )
-
-        private fun getCategoryKeyboardMapKey(categoryId: Int, id: Int) =
-            ((categoryId.toLong()) shl Integer.SIZE) or id.toLong()
+        private fun getCategoryKeyboardMapKey(category: Category, id: Int) =
+            ((category.ordinal.toLong()) shl Integer.SIZE) or id.toLong()
 
         private val EMOJI_KEY_COMPARATOR = Comparator { lhs: Key, rhs: Key ->
             val lHitBox = lhs.hitBox

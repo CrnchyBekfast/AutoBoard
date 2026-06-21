@@ -130,7 +130,7 @@ private fun loadEmojiDefaultVersionsAndPopupSpecs(context: Context, category2Emo
 }
 
 private fun getEmojiFileName(category: KeyboardElement) = when (category) {
-    KeyboardElement.EMOJI_SMILEY -> "SMILEYS_AND_EMOTION.txt"
+    KeyboardElement.EMOJI_SMILEYS -> "SMILEYS_AND_EMOTION.txt"
     KeyboardElement.EMOJI_PEOPLE -> "PEOPLE_AND_BODY.txt"
     KeyboardElement.EMOJI_NATURE -> "ANIMALS_AND_NATURE.txt"
     KeyboardElement.EMOJI_FOOD -> "FOOD_AND_DRINK.txt"

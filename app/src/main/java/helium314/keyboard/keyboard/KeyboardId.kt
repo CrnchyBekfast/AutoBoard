@@ -107,7 +107,7 @@ enum class KeyboardElement(val descriptionResId: Int) {
     PHONE(R.string.spoken_description_mode_phone),
     PHONE_SYMBOLS(R.string.spoken_description_mode_phone_shift),
     EMOJI_RECENTS(R.string.spoken_description_emoji_category_recents),
-    EMOJI_SMILEY(R.string.spoken_description_emoji_category_eight_smiley),
+    EMOJI_SMILEYS(R.string.spoken_description_emoji_category_eight_smiley),
     EMOJI_PEOPLE(R.string.spoken_description_emoji_category_eight_smiley_people),
     EMOJI_NATURE(R.string.spoken_description_emoji_category_eight_animals_nature),
     EMOJI_FOOD(R.string.spoken_description_emoji_category_eight_food_drink),

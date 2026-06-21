@@ -156,16 +156,16 @@
     <declare-styleable name="EmojiPalettesView">
         <attr name="categoryPageIndicatorBackground" format="color" />
         <attr name="iconEmojiRecentsTab" format="reference" />
-        <attr name="iconEmojiCategory1Tab" format="reference" />
-        <attr name="iconEmojiCategory2Tab" format="reference" />
-        <attr name="iconEmojiCategory3Tab" format="reference" />
-        <attr name="iconEmojiCategory4Tab" format="reference" />
-        <attr name="iconEmojiCategory5Tab" format="reference" />
-        <attr name="iconEmojiCategory6Tab" format="reference" />
-        <attr name="iconEmojiCategory7Tab" format="reference" />
-        <attr name="iconEmojiCategory8Tab" format="reference" />
-        <attr name="iconEmojiCategory9Tab" format="reference" />
-        <attr name="iconEmojiCategory10Tab" format="reference" />
+        <attr name="iconEmojiSmileysTab" format="reference" />
+        <attr name="iconEmojiPeopleTab" format="reference" />
+        <attr name="iconEmojiNatureTab" format="reference" />
+        <attr name="iconEmojiFoodTab" format="reference" />
+        <attr name="iconEmojiTravelPlacesTab" format="reference" />
+        <attr name="iconEmojiActivitiesTab" format="reference" />
+        <attr name="iconEmojiObjectsTab" format="reference" />
+        <attr name="iconEmojiSymbolsTab" format="reference" />
+        <attr name="iconEmojiFlagsTab" format="reference" />
+        <attr name="iconEmojiEmoticonsTab" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="ClipboardHistoryView">

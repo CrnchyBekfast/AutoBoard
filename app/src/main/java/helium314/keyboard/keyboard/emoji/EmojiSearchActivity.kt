@@ -293,7 +293,7 @@ class EmojiSearchActivity : ComponentActivity() {
             .setKeyboardGeometry(keyboardWidth, EmojiLayoutParams(resources).emojiKeyboardHeight).build()
         val keyboard = DynamicGridKeyboard.ofRowCount(prefs(), layoutSet.getKeyboard(KeyboardElement.EMOJI_RECENTS),
             if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 1 else 2,
-            12, keyboardWidth)
+            false, keyboardWidth)
         val builder = KeyboardBuilder(this, KeyboardParams())
         builder.load(keyboard.mId)
         keyboardParams = builder.mParams
