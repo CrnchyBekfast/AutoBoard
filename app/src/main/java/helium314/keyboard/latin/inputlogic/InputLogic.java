@@ -2676,7 +2676,7 @@ public final class InputLogic {
     private static boolean isInlineEmojiSearchAction() {
         var keyboard = KeyboardSwitcher.getInstance().getKeyboard();
         var internalAction = keyboard != null? keyboard.mId.mInternalAction : null;
-        return internalAction != null && internalAction.code() == KeyCode.INLINE_EMOJI_SEARCH_DONE;
+        return internalAction != null && internalAction.getCode() == KeyCode.INLINE_EMOJI_SEARCH_DONE;
     }
 
     private void searchForEmojiInline(int sequenceNumber, OnGetSuggestedWordsCallback callback) {

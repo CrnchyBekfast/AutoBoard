@@ -33,7 +33,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import helium314.keyboard.event.Event;
-import helium314.keyboard.keyboard.KeyboardLayoutSet.KeyboardLayoutSetException;
 import helium314.keyboard.keyboard.clipboard.ClipboardHistoryView;
 import helium314.keyboard.keyboard.emoji.EmojiPalettesView;
 import helium314.keyboard.keyboard.internal.KeyboardState;
@@ -144,7 +143,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
             mCurrentUiMode = res.getConfiguration().uiMode;
             mCurrentOrientation = res.getConfiguration().orientation;
             mCurrentDpi = res.getDisplayMetrics().densityDpi;
-            KeyboardLayoutSet.onKeyboardThemeChanged();
+            KeyboardLayoutSet.Companion.onKeyboardThemeChanged();
             return true;
         }
         return false;
@@ -170,8 +169,8 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
                 .build();
         try {
             mState.onLoadKeyboard(currentAutoCapsState, currentRecapitalizeState, settingsValues.mOneHandedModeEnabled);
-        } catch (KeyboardLayoutSetException e) {
-            Log.e(TAG, "loading keyboard failed: " + e.mKeyboardId, e.getCause());
+        } catch (KeyboardLayoutSet.Companion.KeyboardLayoutSetException e) {
+            Log.e(TAG, "loading keyboard failed: " + e.getKeyboardId(), e.getCause());
             try {
                 final InputMethodSubtype defaults = SubtypeUtilsAdditional.INSTANCE.createDefaultSubtype(mRichImm.getCurrentSubtypeLocale());
                 mKeyboardLayoutSet = builder.setKeyboardGeometry(keyboardWidth, keyboardHeight)
@@ -183,8 +182,8 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
                         .build();
                 mState.onLoadKeyboard(currentAutoCapsState, currentRecapitalizeState, false);
                 showToast("error loading the keyboard, falling back to defaults", false);
-            } catch (KeyboardLayoutSetException e2) {
-                Log.e(TAG, "even fallback to defaults failed: " + e2.mKeyboardId, e2.getCause());
+            } catch (KeyboardLayoutSet.Companion.KeyboardLayoutSetException e2) {
+                Log.e(TAG, "even fallback to defaults failed: " + e2.getKeyboardId(), e2.getCause());
             }
         }
     }

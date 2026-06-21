@@ -89,24 +89,24 @@ public final class KeyboardId {
     private final int mHashCode;
 
     public KeyboardId(final int elementId, final KeyboardLayoutSet.Params params) {
-        mSubtype = params.mSubtype;
-        mWidth = params.mKeyboardWidth;
-        mHeight = params.mKeyboardHeight;
-        mMode = params.mMode;
+        mSubtype = params.subtype;
+        mWidth = params.getKeyboardWidth();
+        mHeight = params.getKeyboardHeight();
+        mMode = params.getMode();
         mElementId = elementId;
-        mEditorInfo = params.mEditorInfo;
-        mDeviceLocked = params.mDeviceLocked;
-        mNumberRowEnabled = params.mNumberRowEnabled;
-        mNumberRowInSymbols = params.mNumberRowInSymbols;
-        mLanguageSwitchKeyEnabled = params.mLanguageSwitchKeyEnabled;
-        mEmojiKeyEnabled = params.mEmojiKeyEnabled;
+        mEditorInfo = params.editorInfo;
+        mDeviceLocked = params.getDeviceLocked();
+        mNumberRowEnabled = params.getNumberRowEnabled();
+        mNumberRowInSymbols = params.getNumberRowInSymbols();
+        mLanguageSwitchKeyEnabled = params.getLanguageSwitchKeyEnabled();
+        mEmojiKeyEnabled = params.getEmojiKeyEnabled();
         mCustomActionLabel = (mEditorInfo.actionLabel != null)
                 ? mEditorInfo.actionLabel.toString() : null;
-        mHasShortcutKey = params.mVoiceInputKeyEnabled;
-        mIsSplitLayout = params.mIsSplitLayoutEnabled;
-        mOneHandedModeEnabled = params.mOneHandedModeEnabled;
-        mInternalAction = params.mInternalAction;
-        mEmojiSearchAvailable = params.mEmojiSearchAvailable;
+        mHasShortcutKey = params.getVoiceInputKeyEnabled();
+        mIsSplitLayout = params.isSplitLayoutEnabled();
+        mOneHandedModeEnabled = params.getOneHandedModeEnabled();
+        mInternalAction = params.getInternalAction();
+        mEmojiSearchAvailable = params.getEmojiSearchAvailable();
 
         mHashCode = computeHashCode(this);
     }

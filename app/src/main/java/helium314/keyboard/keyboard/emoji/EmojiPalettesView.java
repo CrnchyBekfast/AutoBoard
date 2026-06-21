@@ -363,7 +363,7 @@ public final class EmojiPalettesView extends LinearLayout
         MainKeyboardView keyboardView = findViewById(R.id.bottom_row_keyboard);
         keyboardView.setKeyboardActionListener(keyboardActionListener);
         PointerTracker.switchTo(keyboardView);
-        final KeyboardLayoutSet kls = KeyboardLayoutSet.Builder.buildEmojiClipBottomRow(getContext(), editorInfo);
+        final KeyboardLayoutSet kls = KeyboardLayoutSet.Builder.Companion.buildEmojiClipBottomRow(getContext(), editorInfo);
         final Keyboard keyboard = kls.getKeyboard(KeyboardId.ELEMENT_EMOJI_BOTTOM_ROW);
         keyboardView.setKeyboard(keyboard);
     }
