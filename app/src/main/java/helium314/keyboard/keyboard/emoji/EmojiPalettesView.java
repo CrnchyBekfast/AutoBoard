@@ -306,6 +306,8 @@ public final class EmojiPalettesView extends LinearLayout
         addRecentKey(key);
         final int code = key.getCode();
         if (code == KeyCode.MULTIPLE_CODE_POINTS) {
+            // todo: when we enter some emoticons, e.g. :-D, inline emoji search is triggered and emoji view is closed
+            //  (one more instance of "emoji search should recognize emoticons", but in this case could be fixed in other ways)
             mKeyboardActionListener.onTextInput(key.getOutputText());
         } else {
             mKeyboardActionListener.onCodeInput(code, NOT_A_COORDINATE, NOT_A_COORDINATE, false);
