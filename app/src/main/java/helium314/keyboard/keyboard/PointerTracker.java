@@ -246,7 +246,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
             final PointerTracker tracker = sTrackers.get(i);
             tracker.setKeyDetectorInner(keyDetector);
         }
-        sGestureEnabler.setPasswordMode(keyboard.mId.passwordInput());
+        sGestureEnabler.setPasswordMode(keyboard.mId.isPasswordInput());
     }
 
     public static void setReleasedKeyGraphicsToAllKeys() {

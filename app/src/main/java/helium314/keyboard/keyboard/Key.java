@@ -1097,7 +1097,7 @@ public class Key implements Comparable<Key> {
             mHeight = params.mDefaultRowHeight;
             mIconName = KeySpecParser.getIconName(keySpec) ;
 
-            final boolean needsToUpcase = needsToUpcase(mLabelFlags, params.mId.mElementId);
+            final boolean needsToUpcase = needsToUpcase(mLabelFlags, params.mId.getElementId());
             final Locale localeForUpcasing = params.mId.getLocale();
             int actionFlags = 0;
             if (params.mId.isNumberLayout())
@@ -1106,7 +1106,7 @@ public class Key implements Comparable<Key> {
             // label
             String label = null;
             if ((mLabelFlags & LABEL_FLAGS_FROM_CUSTOM_ACTION_LABEL) != 0) {
-                mLabel = params.mId.mCustomActionLabel;
+                mLabel = params.mId.getCustomActionLabel();
             } else if (code >= Character.MIN_SUPPLEMENTARY_CODE_POINT) {
                 // This is a workaround to have a key that has a supplementary code point in its label.
                 // Because we can put a string in resource neither as a XML entity of a supplementary

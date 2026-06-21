@@ -642,10 +642,10 @@ public class KeyboardView extends View {
         if (key.hasActionKeyBackground()) {
             mColors.setColor(icon, ColorType.ACTION_KEY_ICON);
         } else if (key.isShift() && keyboard != null) {
-            if (keyboard.mId.mElementId == KeyboardId.ELEMENT_ALPHABET_MANUAL_SHIFTED
-                    || keyboard.mId.mElementId == KeyboardId.ELEMENT_ALPHABET_SHIFT_LOCKED
-                    || keyboard.mId.mElementId == KeyboardId.ELEMENT_ALPHABET_AUTOMATIC_SHIFTED
-                    || keyboard.mId.mElementId == KeyboardId.ELEMENT_ALPHABET_SHIFT_LOCK_SHIFTED
+            if (keyboard.mId.getElementId() == KeyboardId.ELEMENT_ALPHABET_MANUAL_SHIFTED
+                    || keyboard.mId.getElementId() == KeyboardId.ELEMENT_ALPHABET_SHIFT_LOCKED
+                    || keyboard.mId.getElementId() == KeyboardId.ELEMENT_ALPHABET_AUTOMATIC_SHIFTED
+                    || keyboard.mId.getElementId() == KeyboardId.ELEMENT_ALPHABET_SHIFT_LOCK_SHIFTED
             )
                 mColors.setColor(icon, ColorType.SHIFT_KEY_ICON);
             else

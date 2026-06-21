@@ -21,7 +21,6 @@ import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
-import helium314.keyboard.latin.utils.KtxKt;
 import helium314.keyboard.latin.utils.ResourceUtils;
 
 import java.util.ArrayList;
@@ -217,8 +216,8 @@ public class KeyboardParams {
             : context.getResources().obtainAttributes(attr, R.styleable.Keyboard_Key);
         SettingsValues sv = Settings.getValues();
         try {
-            final int height = mId.mHeight;
-            final int width = mId.mWidth;
+            final int height = mId.getHeight();
+            final int width = mId.getWidth();
             mOccupiedHeight = height;
             mOccupiedWidth = width;
             mTopPadding = (int) keyboardAttr.getFraction(
@@ -277,6 +276,6 @@ public class KeyboardParams {
             keyAttr.recycle();
             keyboardAttr.recycle();
         }
-        setTabletExtraKeys = Settings.getInstance().isTablet() && !mId.mSubtype.isCustom();
+        setTabletExtraKeys = Settings.getInstance().isTablet() && !mId.getSubtype().isCustom();
     }
 }

@@ -215,8 +215,8 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         mCurrentInputView.setKeyboardTopPadding(newKeyboard.mTopPadding);
         keyboardView.setKeyPreviewPopupEnabled(currentSettingsValues.mKeyPreviewPopupOn);
         keyboardView.updateShortcutKey(mRichImm.isShortcutImeReady());
-        final boolean subtypeChanged = (oldKeyboard == null) || !newKeyboard.mId.mSubtype.equals(oldKeyboard.mId.mSubtype);
-        final int languageOnSpacebarFormatType = LanguageOnSpacebarUtils.getLanguageOnSpacebarFormatType(newKeyboard.mId.mSubtype);
+        final boolean subtypeChanged = (oldKeyboard == null) || !newKeyboard.mId.getSubtype().equals(oldKeyboard.mId.getSubtype());
+        final int languageOnSpacebarFormatType = LanguageOnSpacebarUtils.getLanguageOnSpacebarFormatType(newKeyboard.mId.getSubtype());
         final boolean hasMultipleEnabledIMEsOrSubtypes = mRichImm.hasMultipleEnabledIMEsOrSubtypes(true);
         keyboardView.startDisplayLanguageOnSpacebar(subtypeChanged, languageOnSpacebarFormatType, hasMultipleEnabledIMEsOrSubtypes);
 
@@ -657,7 +657,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         final Keyboard keyboard = mKeyboardView.getKeyboard();
         if (keyboard == null) // may happen when using hardware keyboard
             return false;
-        int activeKeyboardId = keyboard.mId.mElementId;
+        int activeKeyboardId = keyboard.mId.getElementId();
         for (int keyboardId : keyboardIds) {
             if (activeKeyboardId == keyboardId) {
                 return true;

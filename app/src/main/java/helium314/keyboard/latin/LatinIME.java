@@ -468,7 +468,7 @@ public class LatinIME extends InputMethodService implements
 
         public void onStartInputView(final EditorInfo editorInfo, final boolean restarting) {
             if (hasMessages(MSG_PENDING_IMS_CALLBACK)
-                    && KeyboardId.equivalentEditorInfoForKeyboard(editorInfo, mAppliedEditorInfo)) {
+                    && KeyboardId.Companion.equivalentEditorInfoForKeyboard(editorInfo, mAppliedEditorInfo)) {
                 // Typically this is the second onStartInputView after orientation changed.
                 resetPendingImsCallback();
             } else {
@@ -1781,14 +1781,14 @@ public class LatinIME extends InputMethodService implements
     protected void dump(final FileDescriptor fd, final PrintWriter fout, final String[] args) {
         super.dump(fd, fout, args);
 
-        final Printer p = new PrintWriterPrinter(fout);
+        Printer p = new PrintWriterPrinter(fout);
         p.println("LatinIME state :");
         p.println("  VersionCode = " + BuildConfig.VERSION_CODE);
         p.println("  VersionName = " + BuildConfig.VERSION_NAME);
-        final Keyboard keyboard = mKeyboardSwitcher.getKeyboard();
-        final int keyboardMode = keyboard != null ? keyboard.mId.mMode : -1;
+        Keyboard keyboard = mKeyboardSwitcher.getKeyboard();
+        int keyboardMode = keyboard != null ? keyboard.mId.getMode() : -1;
         p.println("  Keyboard mode = " + keyboardMode);
-        final SettingsValues settingsValues = mSettings.getCurrent();
+        SettingsValues settingsValues = mSettings.getCurrent();
         p.println(settingsValues.dump());
         p.println(mDictionaryFacilitator.dump(this));
     }

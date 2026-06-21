@@ -88,7 +88,7 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
         val keyboard = builder.build()
         keyboardCache[id] = SoftReference<Keyboard>(keyboard)
         if (!mParams.isSpellChecker
-            && (id.mElementId == KeyboardId.ELEMENT_ALPHABET || id.mElementId == KeyboardId.ELEMENT_ALPHABET_AUTOMATIC_SHIFTED)
+            && (id.elementId == KeyboardId.ELEMENT_ALPHABET || id.elementId == KeyboardId.ELEMENT_ALPHABET_AUTOMATIC_SHIFTED)
         ) {
             // We only forcibly cache the primary, "ALPHABET", layouts.
             for (i in forcibleKeyboardCache.size - 1 downTo 1) {

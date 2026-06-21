@@ -46,7 +46,7 @@ object BackgroundGatheringCache {
     }
 
     fun addWord(word: WordData) {
-        if (KeyboardSwitcher.getInstance().keyboard.mId.mInternalAction?.code == KeyCode.INLINE_EMOJI_SEARCH_DONE) {
+        if (KeyboardSwitcher.getInstance().keyboard.mId.internalAction?.code == KeyCode.INLINE_EMOJI_SEARCH_DONE) {
             if (DEBUG) Log.i(TAG, "inline emoji search, not adding anything")
             return
         }
@@ -210,7 +210,7 @@ class WordData(
     private val height = keyboard.mOccupiedHeight
     private val width = keyboard.mOccupiedWidth
 
-    private val packageName = keyboard.mId.mEditorInfo.packageName
+    private val packageName = keyboard.mId.editorInfo.packageName
     private val pointerData = PointerData.fromPointers(composedData.mInputPointers)
 
     private val timestamp = System.currentTimeMillis()
@@ -320,7 +320,7 @@ class WordData(
             return false
         if (GestureDataGatheringSettings.isForbiddenForDataGathering(packageName, context))
             return false // package ignored (we should never come here for blocked apps, but better be safe)
-        val inputAttributes = InputAttributes(keyboard.mId.mEditorInfo, false, "")
+        val inputAttributes = InputAttributes(keyboard.mId.editorInfo, false, "")
         val isEmailField = InputTypeUtils.isEmailVariation(inputAttributes.mInputType and InputType.TYPE_MASK_VARIATION)
         if (inputAttributes.mIsPasswordField || inputAttributes.mNoLearning || isEmailField)
             return false // background gathering should not even be enabled, but better have this backup

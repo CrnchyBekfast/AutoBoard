@@ -115,7 +115,7 @@ class ShiftStateSelector(
     val manualOrLocked: AbstractKeyData? = null,
 ) : AbstractKeyData {
     override fun compute(params: KeyboardParams): KeyData? {
-        return when (params.mId.mElementId) {
+        return when (params.mId.elementId) {
             KeyboardId.ELEMENT_ALPHABET, KeyboardId.ELEMENT_SYMBOLS -> unshifted ?: default
             KeyboardId.ELEMENT_ALPHABET_MANUAL_SHIFTED -> shiftedManual ?: manualOrLocked ?: shifted ?: default
             KeyboardId.ELEMENT_ALPHABET_AUTOMATIC_SHIFTED -> shiftedAutomatic ?: shifted ?: default
@@ -150,7 +150,7 @@ class ShiftStateSelector(
  *  [default] will be used instead.
  * @property normal The key data to use when? Currently ignored... If this value is null,
  *  [default] will be used instead.
- * @property password The key data to use if [KeyboardId.passwordInput] return true. If this value is
+ * @property password The key data to use if [KeyboardId.isPasswordInput] return true. If this value is
  *  null, [default] will be used instead.
  * @property date The key data to use if [KeyboardId.MODE_DATE] is active. If this value is null,
  *  null, [default] will be used instead.
@@ -173,12 +173,12 @@ data class VariationSelector(
 ) : AbstractKeyData {
     override fun compute(params: KeyboardParams): KeyData? {
         return when {
-            params.mId.passwordInput() -> password ?: default
-            params.mId.mMode == KeyboardId.MODE_EMAIL -> email ?: default
-            params.mId.mMode == KeyboardId.MODE_URL -> uri ?: default
-            params.mId.mMode == KeyboardId.MODE_DATE -> date ?: default
-            params.mId.mMode == KeyboardId.MODE_TIME -> time ?: default
-            params.mId.mMode == KeyboardId.MODE_DATETIME -> datetime ?: default
+            params.mId.isPasswordInput -> password ?: default
+            params.mId.mode == KeyboardId.MODE_EMAIL -> email ?: default
+            params.mId.mode == KeyboardId.MODE_URL -> uri ?: default
+            params.mId.mode == KeyboardId.MODE_DATE -> date ?: default
+            params.mId.mode == KeyboardId.MODE_TIME -> time ?: default
+            params.mId.mode == KeyboardId.MODE_DATETIME -> datetime ?: default
             else -> normal ?: default
         }?.compute(params)
     }
@@ -193,10 +193,10 @@ data class VariationSelector(
  * The JSON class identifier for this selector is `keyboard_state_selector`.
  * Note that the conditions are checked in order as given below, and the first non-null AbstractKeyData is selected.
  *
- * @property emojiKeyEnabled The key data to use if [KeyboardId.mEmojiKeyEnabled] is true.
- * @property languageKeyEnabled The key data to use if [KeyboardId.mLanguageSwitchKeyEnabled] is true.
- * @property symbols The key data to use if [KeyboardId.mElementId] is [KeyboardId.ELEMENT_SYMBOLS].
- * @property moreSymbols The key data to use if [KeyboardId.mElementId] is [KeyboardId.ELEMENT_SYMBOLS_SHIFTED].
+ * @property emojiKeyEnabled The key data to use if [KeyboardId.emojiKeyEnabled] is true.
+ * @property languageKeyEnabled The key data to use if [KeyboardId.languageSwitchKeyEnabled] is true.
+ * @property symbols The key data to use if [KeyboardId.elementId] is [KeyboardId.ELEMENT_SYMBOLS].
+ * @property moreSymbols The key data to use if [KeyboardId.elementId] is [KeyboardId.ELEMENT_SYMBOLS_SHIFTED].
  * @property alphabet The key data to use if [KeyboardId.isAlphabetKeyboard] is true.
  * @property default The default key data which should be used in case none of the other conditions have a matching non-null
  * AbstractKeyData. Can be null, in this case no key is displayed.
@@ -213,17 +213,17 @@ class KeyboardStateSelector(
     val emojiSearchAvailable: AbstractKeyData? = null,
 ) : AbstractKeyData {
     override fun compute(params: KeyboardParams): KeyData? {
-        if (params.mId.mEmojiKeyEnabled)
+        if (params.mId.emojiKeyEnabled)
             emojiKeyEnabled?.compute(params)?.let { return it }
-        if (params.mId.mLanguageSwitchKeyEnabled)
+        if (params.mId.languageSwitchKeyEnabled)
             languageKeyEnabled?.compute(params)?.let { return it }
-        if (params.mId.mElementId == KeyboardId.ELEMENT_SYMBOLS)
+        if (params.mId.elementId == KeyboardId.ELEMENT_SYMBOLS)
             symbols?.compute(params)?.let { return it }
-        if (params.mId.mElementId == KeyboardId.ELEMENT_SYMBOLS_SHIFTED)
+        if (params.mId.elementId == KeyboardId.ELEMENT_SYMBOLS_SHIFTED)
             moreSymbols?.compute(params)?.let { return it }
         if (params.mId.isAlphabetKeyboard)
             alphabet?.compute(params)?.let { return it }
-        if (params.mId.mEmojiSearchAvailable)
+        if (params.mId.emojiSearchAvailable)
             emojiSearchAvailable?.compute(params)?.let { return it }
 
         return default?.compute(params)
@@ -258,7 +258,7 @@ class LayoutDirectionSelector(
     val rtl: AbstractKeyData,
 ) : AbstractKeyData {
     override fun compute(params: KeyboardParams): KeyData? {
-        return (if (params.mId.mSubtype.isRtlSubtype) { rtl } else { ltr }).compute(params)
+        return (if (params.mId.subtype.isRtlSubtype) { rtl } else { ltr }).compute(params)
     }
 
     override fun asString(isForDisplay: Boolean): String {
