@@ -5,9 +5,11 @@
  */
 package helium314.keyboard.keyboard.internal.keyboard_parser.floris
 
+import helium314.keyboard.keyboard.KeyboardElement
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import helium314.keyboard.keyboard.KeyboardId
+import helium314.keyboard.keyboard.KeyboardMode
 import helium314.keyboard.keyboard.internal.KeyboardParams
 
 // taken from FlorisBoard, small modifications
@@ -69,7 +71,7 @@ class CaseSelector(
     val upper: AbstractKeyData,
 ) : AbstractKeyData {
     override fun compute(params: KeyboardParams): KeyData? {
-        return (if (params.mId.isAlphabetShifted) { upper } else { lower }).compute(params)
+        return (if (params.mId.element.isAlphabetShifted) { upper } else { lower }).compute(params)
     }
 
     override fun asString(isForDisplay: Boolean): String {
@@ -115,11 +117,11 @@ class ShiftStateSelector(
     val manualOrLocked: AbstractKeyData? = null,
 ) : AbstractKeyData {
     override fun compute(params: KeyboardParams): KeyData? {
-        return when (params.mId.elementId) {
-            KeyboardId.ELEMENT_ALPHABET, KeyboardId.ELEMENT_SYMBOLS -> unshifted ?: default
-            KeyboardId.ELEMENT_ALPHABET_MANUAL_SHIFTED -> shiftedManual ?: manualOrLocked ?: shifted ?: default
-            KeyboardId.ELEMENT_ALPHABET_AUTOMATIC_SHIFTED -> shiftedAutomatic ?: shifted ?: default
-            KeyboardId.ELEMENT_ALPHABET_SHIFT_LOCKED, KeyboardId.ELEMENT_ALPHABET_SHIFT_LOCK_SHIFTED -> capsLock ?: manualOrLocked ?: shifted ?: default
+        return when (params.mId.element) {
+            KeyboardElement.ALPHABET, KeyboardElement.SYMBOLS -> unshifted ?: default
+            KeyboardElement.ALPHABET_MANUAL_SHIFTED -> shiftedManual ?: manualOrLocked ?: shifted ?: default
+            KeyboardElement.ALPHABET_AUTOMATIC_SHIFTED -> shiftedAutomatic ?: shifted ?: default
+            KeyboardElement.ALPHABET_SHIFT_LOCKED, KeyboardElement.ALPHABET_SHIFT_LOCK_SHIFTED -> capsLock ?: manualOrLocked ?: shifted ?: default
             else -> default // or rather unshifted?
         }?.compute(params)
     }
@@ -144,19 +146,19 @@ class ShiftStateSelector(
  * @property default The default key data which should be used in case no key variation is known or for the current
  *  key variation no override key is defined. Can be null, in this case this may mean the variation selector hides
  *  the key if no direct match is present.
- * @property email The key data to use if [KeyboardId.MODE_EMAIL] is active. If this value is
+ * @property email The key data to use if [KeyboardMode.EMAIL] is active. If this value is
  *  null, [default] will be used instead.
- * @property uri The key data to use if [KeyboardId.MODE_URL] is active. If this value is null,
+ * @property uri The key data to use if [KeyboardMode.URL] is active. If this value is null,
  *  [default] will be used instead.
  * @property normal The key data to use when? Currently ignored... If this value is null,
  *  [default] will be used instead.
  * @property password The key data to use if [KeyboardId.isPasswordInput] return true. If this value is
  *  null, [default] will be used instead.
- * @property date The key data to use if [KeyboardId.MODE_DATE] is active. If this value is null,
+ * @property date The key data to use if [KeyboardMode.DATE] is active. If this value is null,
  *  null, [default] will be used instead.
- * @property time The key data to use if [KeyboardId.MODE_TIME] is active. If this value is null,
+ * @property time The key data to use if [KeyboardMode.TIME] is active. If this value is null,
  *  null, [default] will be used instead.
- * @property datetime The key data to use if [KeyboardId.MODE_DATETIME] is active. If this value is null,
+ * @property datetime The key data to use if [KeyboardMode.DATETIME] is active. If this value is null,
  *  null, [default] will be used instead.
  */
 @Serializable
@@ -174,11 +176,11 @@ data class VariationSelector(
     override fun compute(params: KeyboardParams): KeyData? {
         return when {
             params.mId.isPasswordInput -> password ?: default
-            params.mId.mode == KeyboardId.MODE_EMAIL -> email ?: default
-            params.mId.mode == KeyboardId.MODE_URL -> uri ?: default
-            params.mId.mode == KeyboardId.MODE_DATE -> date ?: default
-            params.mId.mode == KeyboardId.MODE_TIME -> time ?: default
-            params.mId.mode == KeyboardId.MODE_DATETIME -> datetime ?: default
+            params.mId.mode == KeyboardMode.EMAIL -> email ?: default
+            params.mId.mode == KeyboardMode.URL -> uri ?: default
+            params.mId.mode == KeyboardMode.DATE -> date ?: default
+            params.mId.mode == KeyboardMode.TIME -> time ?: default
+            params.mId.mode == KeyboardMode.DATETIME -> datetime ?: default
             else -> normal ?: default
         }?.compute(params)
     }
@@ -195,9 +197,9 @@ data class VariationSelector(
  *
  * @property emojiKeyEnabled The key data to use if [KeyboardId.emojiKeyEnabled] is true.
  * @property languageKeyEnabled The key data to use if [KeyboardId.languageSwitchKeyEnabled] is true.
- * @property symbols The key data to use if [KeyboardId.elementId] is [KeyboardId.ELEMENT_SYMBOLS].
- * @property moreSymbols The key data to use if [KeyboardId.elementId] is [KeyboardId.ELEMENT_SYMBOLS_SHIFTED].
- * @property alphabet The key data to use if [KeyboardId.isAlphabetKeyboard] is true.
+ * @property symbols The key data to use if [KeyboardId.element] is [KeyboardElement.SYMBOLS].
+ * @property moreSymbols The key data to use if [KeyboardId.element] is [KeyboardElement.SYMBOLS_SHIFTED].
+ * @property alphabet The key data to use if [KeyboardElement.isAlphabet] is true.
  * @property default The default key data which should be used in case none of the other conditions have a matching non-null
  * AbstractKeyData. Can be null, in this case no key is displayed.
  */
@@ -217,11 +219,11 @@ class KeyboardStateSelector(
             emojiKeyEnabled?.compute(params)?.let { return it }
         if (params.mId.languageSwitchKeyEnabled)
             languageKeyEnabled?.compute(params)?.let { return it }
-        if (params.mId.elementId == KeyboardId.ELEMENT_SYMBOLS)
+        if (params.mId.element == KeyboardElement.SYMBOLS)
             symbols?.compute(params)?.let { return it }
-        if (params.mId.elementId == KeyboardId.ELEMENT_SYMBOLS_SHIFTED)
+        if (params.mId.element == KeyboardElement.SYMBOLS_SHIFTED)
             moreSymbols?.compute(params)?.let { return it }
-        if (params.mId.isAlphabetKeyboard)
+        if (params.mId.element.isAlphabet)
             alphabet?.compute(params)?.let { return it }
         if (params.mId.emojiSearchAvailable)
             emojiSearchAvailable?.compute(params)?.let { return it }

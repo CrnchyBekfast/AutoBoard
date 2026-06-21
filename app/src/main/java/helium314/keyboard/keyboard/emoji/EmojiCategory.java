@@ -13,6 +13,7 @@ import android.content.res.TypedArray;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+import helium314.keyboard.keyboard.KeyboardElement;
 import helium314.keyboard.latin.settings.Defaults;
 import helium314.keyboard.latin.utils.KtxKt;
 import helium314.keyboard.latin.utils.Log;
@@ -20,7 +21,6 @@ import helium314.keyboard.latin.utils.Log;
 import androidx.core.graphics.PaintCompat;
 import helium314.keyboard.keyboard.Key;
 import helium314.keyboard.keyboard.Keyboard;
-import helium314.keyboard.keyboard.KeyboardId;
 import helium314.keyboard.keyboard.KeyboardLayoutSet;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.settings.Settings;
@@ -90,31 +90,19 @@ final class EmojiCategory {
             R.styleable.EmojiPalettesView_iconEmojiCategory9Tab,
             R.styleable.EmojiPalettesView_iconEmojiCategory10Tab };
 
-    private static final int[] sAccessibilityDescriptionResourceIdsForCategories = {
-            R.string.spoken_description_emoji_category_recents,
-            R.string.spoken_description_emoji_category_eight_smiley,
-            R.string.spoken_description_emoji_category_eight_smiley_people,
-            R.string.spoken_description_emoji_category_eight_animals_nature,
-            R.string.spoken_description_emoji_category_eight_food_drink,
-            R.string.spoken_description_emoji_category_eight_travel_places,
-            R.string.spoken_description_emoji_category_eight_activity,
-            R.string.spoken_description_emoji_category_objects,
-            R.string.spoken_description_emoji_category_symbols,
-            R.string.spoken_description_emoji_category_flags,
-            R.string.spoken_description_emoji_category_emoticons};
-
-    private static final int[] sCategoryElementId = {
-            KeyboardId.ELEMENT_EMOJI_RECENTS,
-            KeyboardId.ELEMENT_EMOJI_CATEGORY1,
-            KeyboardId.ELEMENT_EMOJI_CATEGORY2,
-            KeyboardId.ELEMENT_EMOJI_CATEGORY3,
-            KeyboardId.ELEMENT_EMOJI_CATEGORY4,
-            KeyboardId.ELEMENT_EMOJI_CATEGORY5,
-            KeyboardId.ELEMENT_EMOJI_CATEGORY6,
-            KeyboardId.ELEMENT_EMOJI_CATEGORY7,
-            KeyboardId.ELEMENT_EMOJI_CATEGORY8,
-            KeyboardId.ELEMENT_EMOJI_CATEGORY9,
-            KeyboardId.ELEMENT_EMOJI_CATEGORY10 };
+    private static final KeyboardElement[] sCategoryElement = {
+            KeyboardElement.EMOJI_RECENTS,
+            KeyboardElement.EMOJI_SMILEY,
+            KeyboardElement.EMOJI_PEOPLE,
+            KeyboardElement.EMOJI_NATURE,
+            KeyboardElement.EMOJI_FOOD,
+            KeyboardElement.EMOJI_TRAVEL_PLACES,
+            KeyboardElement.EMOJI_ACTIVITIES,
+            KeyboardElement.EMOJI_OBJECTS,
+            KeyboardElement.EMOJI_SYMBOLS,
+            KeyboardElement.EMOJI_FLAGS,
+            KeyboardElement.EMOJI_EMOTICONS
+    };
 
     private final SharedPreferences mPrefs;
     private final Resources mRes;
@@ -206,8 +194,8 @@ final class EmojiCategory {
         return mCategoryTabIconId[categoryId];
     }
 
-    public String getAccessibilityDescription(final int categoryId) {
-        return mRes.getString(sAccessibilityDescriptionResourceIdsForCategories[categoryId]);
+    public String getAccessibilityDescription(int categoryId) {
+        return mRes.getString(sCategoryElement[categoryId].getDescriptionResId());
     }
 
     public ArrayList<CategoryProperties> getShownCategories() {
@@ -266,7 +254,7 @@ final class EmojiCategory {
     }
 
     private int computeCategoryPageCount(final int categoryId) {
-        final Keyboard keyboard = mLayoutSet.getKeyboard(sCategoryElementId[categoryId]);
+        final Keyboard keyboard = mLayoutSet.getKeyboard(sCategoryElement[categoryId]);
         return (keyboard.getSortedKeys().size() - 1) / computeMaxKeyCountPerPage() + 1;
     }
 
@@ -293,20 +281,20 @@ final class EmojiCategory {
             final int currentWidth = ResourceUtils.getKeyboardWidth(mContext, Settings.getValues());
             if (categoryId == EmojiCategory.ID_RECENTS) {
                 final DynamicGridKeyboard kbd = DynamicGridKeyboard.ofKeyCount(mPrefs,
-                        mLayoutSet.getKeyboard(KeyboardId.ELEMENT_EMOJI_RECENTS),
+                        mLayoutSet.getKeyboard(KeyboardElement.EMOJI_RECENTS),
                         mMaxRecentsKeyCount, categoryId, currentWidth);
                 mCategoryKeyboardMap.put(categoryKeyboardMapKey, kbd);
                 kbd.loadRecentKeys(mCategoryKeyboardMap.values());
                 return kbd;
             }
 
-            final Keyboard keyboard = mLayoutSet.getKeyboard(sCategoryElementId[categoryId]);
+            final Keyboard keyboard = mLayoutSet.getKeyboard(sCategoryElement[categoryId]);
             final int keyCountPerPage = computeMaxKeyCountPerPage();
             final Key[][] sortedKeysPages = sortKeysGrouped(
                     keyboard.getSortedKeys(), keyCountPerPage);
             for (int pageId = 0; pageId < sortedKeysPages.length; ++pageId) {
                 final DynamicGridKeyboard tempKeyboard = DynamicGridKeyboard.ofKeyCount(mPrefs,
-                        mLayoutSet.getKeyboard(KeyboardId.ELEMENT_EMOJI_RECENTS),
+                        mLayoutSet.getKeyboard(KeyboardElement.EMOJI_RECENTS),
                         keyCountPerPage, categoryId, currentWidth);
                 for (final Key emojiKey : sortedKeysPages[pageId]) {
                     if (emojiKey == null) {
@@ -322,7 +310,7 @@ final class EmojiCategory {
 
     private int computeMaxKeyCountPerPage() {
         final DynamicGridKeyboard tempKeyboard = DynamicGridKeyboard.ofKeyCount(mPrefs,
-                mLayoutSet.getKeyboard(KeyboardId.ELEMENT_EMOJI_RECENTS),
+                mLayoutSet.getKeyboard(KeyboardElement.EMOJI_RECENTS),
                 0, 0, ResourceUtils.getKeyboardWidth(mContext, Settings.getValues()));
         return MAX_LINE_COUNT_PER_PAGE * tempKeyboard.getOccupiedColumnCount();
     }

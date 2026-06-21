@@ -478,7 +478,7 @@ class Suggest(private val mDictionaryFacilitator: DictionaryFacilitator) {
 
         /** returns CAPS_MODE_MANUAL_SHIFTED, CAPS_MODE_MANUAL_SHIFT_LOCKED, or CAPS_MODE_OFF */
         private fun getCapsModeForTyping(wordComposer: WordComposer, keyboard: Keyboard): Int {
-            val capsMode = keyboard.mId.capsMode
+            val capsMode = keyboard.mId.element.capsMode
             if (capsMode == WordComposer.CAPS_MODE_MANUAL_SHIFTED || capsMode == WordComposer.CAPS_MODE_MANUAL_SHIFT_LOCKED)
                 return capsMode
             // we have some auto-mode which we ignore
@@ -491,7 +491,7 @@ class Suggest(private val mDictionaryFacilitator: DictionaryFacilitator) {
         /** returns CAPS_MODE_MANUAL_SHIFTED, CAPS_MODE_MANUAL_SHIFT_LOCKED, or CAPS_MODE_OFF */
         // maybe could check the details in differences to getCapsModeForTyping and unify?
         private fun getCapsModeForGesture(wordComposer: WordComposer, keyboard: Keyboard): Int {
-            val capsMode = keyboard.mId.capsMode
+            val capsMode = keyboard.mId.element.capsMode
             if (capsMode == WordComposer.CAPS_MODE_MANUAL_SHIFTED || capsMode == WordComposer.CAPS_MODE_MANUAL_SHIFT_LOCKED)
                 return capsMode
             if (wordComposer.isAllUpperCase) return WordComposer.CAPS_MODE_MANUAL_SHIFT_LOCKED

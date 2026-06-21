@@ -12,6 +12,7 @@ import androidx.annotation.XmlRes
 import helium314.keyboard.keyboard.Key
 import helium314.keyboard.keyboard.Key.KeyParams
 import helium314.keyboard.keyboard.Keyboard
+import helium314.keyboard.keyboard.KeyboardElement
 import helium314.keyboard.keyboard.KeyboardId
 import helium314.keyboard.keyboard.internal.keyboard_parser.EmojiParser
 import helium314.keyboard.keyboard.internal.keyboard_parser.KeyboardParser
@@ -44,7 +45,7 @@ open class KeyboardBuilder<KP : KeyboardParams>(protected val mContext: Context,
 
     fun load(id: KeyboardId): KeyboardBuilder<KP> {
         mParams.mId = id
-        if (id.isEmojiKeyboard) {
+        if (id.element.isEmojiLayout) {
             mParams.mAllowRedundantPopupKeys = true
             readAttributes(R.xml.kbd_emoji)
             keysInRows = EmojiParser(mParams, mContext).parse()
@@ -56,7 +57,7 @@ open class KeyboardBuilder<KP : KeyboardParams>(protected val mContext: Context,
                     mParams.mTouchPositionCorrection.load(mContext.resources.getStringArray(R.array.touch_position_correction_data_default))
                 determineAbsoluteValues()
             } catch (e: Exception) {
-                Log.e(TAG, "error parsing layout $id ${id.elementId}", e)
+                Log.e(TAG, "error parsing layout $id ${id.element}", e)
                 throw e
             }
         }
@@ -66,8 +67,8 @@ open class KeyboardBuilder<KP : KeyboardParams>(protected val mContext: Context,
     private fun setupParams() {
         val sv = Settings.getValues()
         mParams.mAllowRedundantPopupKeys = !sv.mRemoveRedundantPopups
-        mParams.mProximityCharsCorrectionEnabled = mParams.mId.elementId == KeyboardId.ELEMENT_ALPHABET
-                || (mParams.mId.isAlphabetKeyboard && !mParams.mId.subtype.hasExtraValue(Constants.Subtype.ExtraValue.NO_SHIFT_PROXIMITY_CORRECTION))
+        mParams.mProximityCharsCorrectionEnabled = mParams.mId.element == KeyboardElement.ALPHABET
+                || (mParams.mId.element.isAlphabet && !mParams.mId.subtype.hasExtraValue(Constants.Subtype.ExtraValue.NO_SHIFT_PROXIMITY_CORRECTION))
 
         LocaleKeyboardInfos.addLocaleKeyTextsToParams(mContext, mParams, sv.mShowMorePopupKeys)
         mParams.mPopupKeyOrder.addAll(sv.mPopupKeyOrder)
@@ -101,7 +102,7 @@ open class KeyboardBuilder<KP : KeyboardParams>(protected val mContext: Context,
 
     open fun build(): Keyboard {
         if (mParams.mId.isSplitLayout
-                && mParams.mId.elementId in KeyboardId.ELEMENT_ALPHABET..KeyboardId.ELEMENT_SYMBOLS_SHIFTED) {
+                && mParams.mId.element in KeyboardElement.ALPHABET..KeyboardElement.SYMBOLS_SHIFTED) {
             addSplit()
         }
         addKeysToParams()
@@ -241,7 +242,7 @@ open class KeyboardBuilder<KP : KeyboardParams>(protected val mContext: Context,
 
     private fun endKeyboard() {
         mParams.removeRedundantPopupKeys()
-        if (!mParams.mId.isEmojiKeyboard) return
+        if (!mParams.mId.element.isEmojiLayout) return
         val actualHeight = mCurrentY - mParams.mVerticalGap + mParams.mBottomPadding
         mParams.mOccupiedHeight = mParams.mOccupiedHeight.coerceAtLeast(actualHeight)
     }

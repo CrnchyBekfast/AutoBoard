@@ -45,15 +45,15 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
      */
     data class InternalAction(val code: Int, val label: String)
 
-    fun getKeyboard(baseKeyboardLayoutSetElementId: Int): Keyboard {
+    fun getKeyboard(baseKeyboardLayoutSetElement: KeyboardElement): Keyboard {
         val keyboardLayoutSetElementId = when (mParams.mode) {
-            KeyboardId.MODE_PHONE -> {
-                if (baseKeyboardLayoutSetElementId == KeyboardId.ELEMENT_SYMBOLS) KeyboardId.ELEMENT_PHONE_SYMBOLS
-                else KeyboardId.ELEMENT_PHONE
+            KeyboardMode.PHONE -> {
+                if (baseKeyboardLayoutSetElement == KeyboardElement.SYMBOLS) KeyboardElement.PHONE_SYMBOLS
+                else KeyboardElement.PHONE
             }
-            KeyboardId.MODE_NUMPAD -> KeyboardId.ELEMENT_NUMPAD
-            KeyboardId.MODE_NUMBER, KeyboardId.MODE_DATE, KeyboardId.MODE_TIME, KeyboardId.MODE_DATETIME -> KeyboardId.ELEMENT_NUMBER
-            else -> baseKeyboardLayoutSetElementId
+            KeyboardMode.NUMPAD -> KeyboardElement.NUMPAD
+            KeyboardMode.NUMBER, KeyboardMode.DATE, KeyboardMode.TIME, KeyboardMode.DATETIME -> KeyboardElement.NUMBER
+            else -> baseKeyboardLayoutSetElement
         }
 
         // Note: The keyboard for each shift state, and mode are represented as an elementName
@@ -80,7 +80,7 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
         }
 
         val builder = KeyboardBuilder(mContext, KeyboardParams(uniqueKeysCache))
-        uniqueKeysCache.setEnabled(id.isAlphabetKeyboard)
+        uniqueKeysCache.setEnabled(id.element.isAlphabet)
         builder.load(id)
         if (mParams.disableTouchPositionCorrectionDataForTest) {
             builder.disableTouchPositionCorrectionDataForTest()
@@ -88,7 +88,7 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
         val keyboard = builder.build()
         keyboardCache[id] = SoftReference<Keyboard>(keyboard)
         if (!mParams.isSpellChecker
-            && (id.elementId == KeyboardId.ELEMENT_ALPHABET || id.elementId == KeyboardId.ELEMENT_ALPHABET_AUTOMATIC_SHIFTED)
+            && (id.element == KeyboardElement.ALPHABET || id.element == KeyboardElement.ALPHABET_AUTOMATIC_SHIFTED)
         ) {
             // We only forcibly cache the primary, "ALPHABET", layouts.
             for (i in forcibleKeyboardCache.size - 1 downTo 1) {
@@ -106,7 +106,7 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
     }
 
     class Params {
-        var mode: Int = 0
+        var mode = KeyboardMode.TEXT
         var disableTouchPositionCorrectionDataForTest: Boolean = false // remove
 
         // TODO: Use {@link InputAttributes} instead of these variables.
@@ -215,7 +215,7 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
 
             fun buildEmojiClipBottomRow(context: Context, ei: EditorInfo?): KeyboardLayoutSet {
                 val builder = Builder(context, ei)
-                builder.params.mode = KeyboardId.MODE_TEXT
+                builder.params.mode = KeyboardMode.TEXT
                 builder.params.emojiSearchAvailable = getLocalesWithEmojiDicts(context).isNotEmpty()
                 val width = ResourceUtils.getKeyboardWidth(context, Settings.getValues())
                 // actually the keyboard does not have full height, but at this point we use it to get correct key heights
@@ -225,23 +225,23 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
                 return builder.build()
             }
 
-            private fun getKeyboardMode(editorInfo: EditorInfo): Int {
+            private fun getKeyboardMode(editorInfo: EditorInfo): KeyboardMode {
                 val inputType = editorInfo.inputType
                 val variation = inputType and InputType.TYPE_MASK_VARIATION
 
                 return when (inputType and InputType.TYPE_MASK_CLASS) {
-                    InputType.TYPE_CLASS_NUMBER -> KeyboardId.MODE_NUMBER
+                    InputType.TYPE_CLASS_NUMBER -> KeyboardMode.NUMBER
                     InputType.TYPE_CLASS_DATETIME -> when (variation) {
-                        InputType.TYPE_DATETIME_VARIATION_DATE -> KeyboardId.MODE_DATE
-                        InputType.TYPE_DATETIME_VARIATION_TIME -> KeyboardId.MODE_TIME
-                        else -> KeyboardId.MODE_DATETIME
+                        InputType.TYPE_DATETIME_VARIATION_DATE -> KeyboardMode.DATE
+                        InputType.TYPE_DATETIME_VARIATION_TIME -> KeyboardMode.TIME
+                        else -> KeyboardMode.DATETIME
                     }
-                    InputType.TYPE_CLASS_PHONE -> KeyboardId.MODE_PHONE
+                    InputType.TYPE_CLASS_PHONE -> KeyboardMode.PHONE
                     InputType.TYPE_CLASS_TEXT ->
-                        if (InputTypeUtils.isEmailVariation(variation)) KeyboardId.MODE_EMAIL
-                        else if (variation == InputType.TYPE_TEXT_VARIATION_URI) KeyboardId.MODE_URL
-                        else KeyboardId.MODE_TEXT
-                    else -> KeyboardId.MODE_TEXT
+                        if (InputTypeUtils.isEmailVariation(variation)) KeyboardMode.EMAIL
+                        else if (variation == InputType.TYPE_TEXT_VARIATION_URI) KeyboardMode.URL
+                        else KeyboardMode.TEXT
+                    else -> KeyboardMode.TEXT
                 }
             }
         }
@@ -283,12 +283,12 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
         }
 
         // used for testing keyboard layout files without actually creating a keyboard
-        fun getFakeKeyboardId(elementId: Int): KeyboardId {
+        fun getFakeKeyboardId(element: KeyboardElement): KeyboardId {
             val params = Params()
             params.editorInfo = EditorInfo()
             params.subtype = emojiSubtype
             params.subtype.mainLayoutName
-            return KeyboardId(elementId, params)
+            return KeyboardId(element, params)
         }
     }
 }

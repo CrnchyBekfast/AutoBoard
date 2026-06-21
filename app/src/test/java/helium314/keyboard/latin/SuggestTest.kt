@@ -7,7 +7,7 @@ import helium314.keyboard.ShadowInputMethodManager2
 import helium314.keyboard.ShadowLocaleManagerCompat
 import helium314.keyboard.event.Event
 import helium314.keyboard.keyboard.Keyboard
-import helium314.keyboard.keyboard.KeyboardId
+import helium314.keyboard.keyboard.KeyboardElement
 import helium314.keyboard.keyboard.KeyboardLayoutSet
 import helium314.keyboard.keyboard.internal.KeyboardParams
 import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo
@@ -606,10 +606,10 @@ class SuggestTest {
 
         val params = KeyboardParams()
         val elementId = when (shiftMode) {
-            WordComposer.CAPS_MODE_MANUAL_SHIFT_LOCKED -> KeyboardId.ELEMENT_ALPHABET_SHIFT_LOCKED
-            WordComposer.CAPS_MODE_MANUAL_SHIFTED -> KeyboardId.ELEMENT_ALPHABET_MANUAL_SHIFTED
-            WordComposer.CAPS_MODE_AUTO_SHIFTED -> KeyboardId.ELEMENT_ALPHABET_AUTOMATIC_SHIFTED
-            else -> KeyboardId.ELEMENT_ALPHABET // off
+            WordComposer.CAPS_MODE_MANUAL_SHIFT_LOCKED -> KeyboardElement.ALPHABET_SHIFT_LOCKED
+            WordComposer.CAPS_MODE_MANUAL_SHIFTED -> KeyboardElement.ALPHABET_MANUAL_SHIFTED
+            WordComposer.CAPS_MODE_AUTO_SHIFTED -> KeyboardElement.ALPHABET_AUTOMATIC_SHIFTED
+            else -> KeyboardElement.ALPHABET // off
         }
         params.GRID_HEIGHT = 1
         params.GRID_WIDTH = 1

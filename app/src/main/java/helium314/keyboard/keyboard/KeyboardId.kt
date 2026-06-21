@@ -9,6 +9,7 @@ import android.text.InputType
 import android.text.TextUtils
 import android.view.inputmethod.EditorInfo
 import helium314.keyboard.compat.EditorInfoCompatUtils.imeActionName
+import helium314.keyboard.latin.R
 import helium314.keyboard.latin.RichInputMethodSubtype
 import helium314.keyboard.latin.WordComposer
 import helium314.keyboard.latin.utils.InputTypeUtils
@@ -17,11 +18,11 @@ import helium314.keyboard.latin.utils.InputTypeUtils
  * Unique identifier for each keyboard type.
  */
 data class KeyboardId(
-    val elementId: Int,
+    val element: KeyboardElement,
     val subtype: RichInputMethodSubtype,
     val width: Int,
     val height: Int,
-    val mode: Int,
+    val mode: KeyboardMode,
     val inputType: Int,
     val imeOptions: Int,
     val imeAction: Int,
@@ -39,8 +40,8 @@ data class KeyboardId(
 ) {
     lateinit var editorInfo: EditorInfo // we don't want it in the data class constructor
 
-    constructor(elemId: Int, params: KeyboardLayoutSet.Params) : this(
-        elemId,
+    constructor(element: KeyboardElement, params: KeyboardLayoutSet.Params) : this(
+        element,
         params.subtype,
         params.keyboardWidth,
         params.keyboardHeight,
@@ -63,10 +64,6 @@ data class KeyboardId(
         editorInfo = params.editorInfo
     }
 
-    val isAlphaOrSymbolKeyboard get() = elementId <= ELEMENT_SYMBOLS_SHIFTED
-
-    val isAlphabetKeyboard get() = isAlphabetKeyboard(elementId)
-
     fun navigateNext(): Boolean {
         return (imeOptions and EditorInfo.IME_FLAG_NAVIGATE_NEXT) != 0
             || imeAction == EditorInfo.IME_ACTION_NEXT
@@ -81,83 +78,9 @@ data class KeyboardId(
 
     val isMultiLine get() = (inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0
 
-    val isAlphabetShifted get() = when (elementId) {
-        ELEMENT_ALPHABET_SHIFT_LOCKED, ELEMENT_ALPHABET_SHIFT_LOCK_SHIFTED, ELEMENT_ALPHABET_AUTOMATIC_SHIFTED, ELEMENT_ALPHABET_MANUAL_SHIFTED -> true
-        else -> false
-    }
-
-    val isAlphabetShiftedManually get() = when (elementId) {
-        ELEMENT_ALPHABET_SHIFT_LOCKED, ELEMENT_ALPHABET_SHIFT_LOCK_SHIFTED, ELEMENT_ALPHABET_MANUAL_SHIFTED -> true
-        else -> false
-    }
-
-    val isNumberLayout get() = when (elementId) {
-        ELEMENT_NUMBER, ELEMENT_NUMPAD, ELEMENT_PHONE, ELEMENT_PHONE_SYMBOLS -> true
-        else -> false
-    }
-
-    val isEmojiKeyboard get() = elementId >= ELEMENT_EMOJI_RECENTS && elementId <= ELEMENT_EMOJI_CATEGORY16
-
-    val isEmojiClipBottomRow get() = elementId == ELEMENT_CLIPBOARD_BOTTOM_ROW || elementId == ELEMENT_EMOJI_BOTTOM_ROW
-
     val locale get() = subtype.locale
 
-    val capsMode: Int
-        get() = when (elementId) {
-            ELEMENT_ALPHABET_SHIFT_LOCKED, ELEMENT_ALPHABET_SHIFT_LOCK_SHIFTED -> WordComposer.CAPS_MODE_MANUAL_SHIFT_LOCKED
-            ELEMENT_ALPHABET_MANUAL_SHIFTED -> WordComposer.CAPS_MODE_MANUAL_SHIFTED
-            ELEMENT_ALPHABET_AUTOMATIC_SHIFTED -> WordComposer.CAPS_MODE_AUTO_SHIFTED
-            else -> WordComposer.CAPS_MODE_OFF
-        }
-
     companion object {
-        const val MODE_TEXT = 0
-        const val MODE_URL = 1
-        const val MODE_EMAIL = 2
-        const val MODE_IM = 3
-        const val MODE_PHONE = 4
-        const val MODE_NUMBER = 5
-        const val MODE_DATE = 6
-        const val MODE_TIME = 7
-        const val MODE_DATETIME = 8
-        const val MODE_NUMPAD = 9
-
-        const val ELEMENT_ALPHABET = 0
-        const val ELEMENT_ALPHABET_MANUAL_SHIFTED = 1
-        const val ELEMENT_ALPHABET_AUTOMATIC_SHIFTED = 2
-        const val ELEMENT_ALPHABET_SHIFT_LOCKED = 3
-        const val ELEMENT_ALPHABET_SHIFT_LOCK_SHIFTED = 4
-        const val ELEMENT_SYMBOLS = 5
-        const val ELEMENT_SYMBOLS_SHIFTED = 6
-        const val ELEMENT_PHONE = 7
-        const val ELEMENT_PHONE_SYMBOLS = 8
-        const val ELEMENT_NUMBER = 9
-        const val ELEMENT_EMOJI_RECENTS = 10
-        const val ELEMENT_EMOJI_CATEGORY1 = 11
-        const val ELEMENT_EMOJI_CATEGORY2 = 12
-        const val ELEMENT_EMOJI_CATEGORY3 = 13
-        const val ELEMENT_EMOJI_CATEGORY4 = 14
-        const val ELEMENT_EMOJI_CATEGORY5 = 15
-        const val ELEMENT_EMOJI_CATEGORY6 = 16
-        const val ELEMENT_EMOJI_CATEGORY7 = 17
-        const val ELEMENT_EMOJI_CATEGORY8 = 18
-        const val ELEMENT_EMOJI_CATEGORY9 = 19
-        const val ELEMENT_EMOJI_CATEGORY10 = 20
-        const val ELEMENT_EMOJI_CATEGORY11 = 21
-        const val ELEMENT_EMOJI_CATEGORY12 = 22
-        const val ELEMENT_EMOJI_CATEGORY13 = 23
-        const val ELEMENT_EMOJI_CATEGORY14 = 24
-        const val ELEMENT_EMOJI_CATEGORY15 = 25
-        const val ELEMENT_EMOJI_CATEGORY16 = 26 // Emoji search
-        const val ELEMENT_CLIPBOARD = 27
-        const val ELEMENT_NUMPAD = 28
-        const val ELEMENT_EMOJI_BOTTOM_ROW = 29
-        const val ELEMENT_CLIPBOARD_BOTTOM_ROW = 30
-
-        private fun isAlphabetKeyboard(elementId: Int): Boolean {
-            return elementId < ELEMENT_SYMBOLS
-        }
-
         fun equivalentEditorInfoForKeyboard(a: EditorInfo?, b: EditorInfo?): Boolean {
             if (a == null && b == null) return true
             if (a == null || b == null) return false
@@ -168,3 +91,49 @@ data class KeyboardId(
             else imeActionName(actionId)
     }
 }
+
+enum class KeyboardElement(val descriptionResId: Int) {
+    ALPHABET(R.string.spoken_description_mode_alpha),
+    ALPHABET_AUTOMATIC_SHIFTED(R.string.spoken_description_mode_alpha),
+    ALPHABET_MANUAL_SHIFTED(R.string.spoken_description_shiftmode_on),
+    ALPHABET_SHIFT_LOCKED(R.string.spoken_description_shiftmode_locked),
+    // weird mode... this is caps lock in recapitalize, and when doing sliding input from shift key when in caps lock mode
+    ALPHABET_SHIFT_LOCK_SHIFTED(R.string.spoken_description_shiftmode_locked),
+    SYMBOLS(R.string.spoken_description_mode_symbol),
+    SYMBOLS_SHIFTED(R.string.spoken_description_mode_symbol_shift),
+    DPAD(R.string.spoken_description_mode_dpad),
+    NUMPAD(R.string.spoken_description_mode_numpad),
+    NUMBER(R.string.spoken_description_mode_number),
+    PHONE(R.string.spoken_description_mode_phone),
+    PHONE_SYMBOLS(R.string.spoken_description_mode_phone_shift),
+    EMOJI_RECENTS(R.string.spoken_description_emoji_category_recents),
+    EMOJI_SMILEY(R.string.spoken_description_emoji_category_eight_smiley),
+    EMOJI_PEOPLE(R.string.spoken_description_emoji_category_eight_smiley_people),
+    EMOJI_NATURE(R.string.spoken_description_emoji_category_eight_animals_nature),
+    EMOJI_FOOD(R.string.spoken_description_emoji_category_eight_food_drink),
+    EMOJI_TRAVEL_PLACES(R.string.spoken_description_emoji_category_eight_travel_places),
+    EMOJI_ACTIVITIES(R.string.spoken_description_emoji_category_eight_activity),
+    EMOJI_OBJECTS(R.string.spoken_description_emoji_category_objects),
+    EMOJI_SYMBOLS(R.string.spoken_description_emoji_category_symbols),
+    EMOJI_FLAGS(R.string.spoken_description_emoji_category_flags),
+    EMOJI_EMOTICONS(R.string.spoken_description_emoji_category_emoticons),
+    EMOJI_BOTTOM_ROW(R.string.spoken_description_emoji),
+    CLIPBOARD(R.string.spoken_description_mode_clipboard),
+    CLIPBOARD_BOTTOM_ROW(R.string.spoken_description_mode_clipboard);
+
+    val isAlphabet get() = this < SYMBOLS
+    val isAlphaOrSymbol get() = this <= SYMBOLS_SHIFTED
+    val isAlphabetShifted get() = isAlphabet && this != ALPHABET
+    val isAlphabetShiftedManually get() = this in ALPHABET_MANUAL_SHIFTED..ALPHABET_SHIFT_LOCK_SHIFTED
+    val isNumberLayout get() = this in NUMBER..PHONE_SYMBOLS
+    val isEmojiLayout get() = this in EMOJI_RECENTS..EMOJI_EMOTICONS
+    val isBottomRow get() = this == EMOJI_BOTTOM_ROW || this == CLIPBOARD_BOTTOM_ROW
+    val capsMode get() = when (this) {
+        ALPHABET_AUTOMATIC_SHIFTED -> WordComposer.CAPS_MODE_AUTO_SHIFTED
+        ALPHABET_MANUAL_SHIFTED -> WordComposer.CAPS_MODE_MANUAL_SHIFTED
+        ALPHABET_SHIFT_LOCKED, ALPHABET_SHIFT_LOCK_SHIFTED -> WordComposer.CAPS_MODE_MANUAL_SHIFT_LOCKED
+        else -> WordComposer.CAPS_MODE_OFF
+    }
+}
+
+enum class KeyboardMode { TEXT, URL, EMAIL, IM, PHONE, NUMBER, DATE, TIME, DATETIME, NUMPAD }
