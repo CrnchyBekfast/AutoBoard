@@ -9,9 +9,9 @@ import android.text.InputType
 import android.text.TextUtils
 import android.view.inputmethod.EditorInfo
 import helium314.keyboard.compat.EditorInfoCompatUtils.imeActionName
+import helium314.keyboard.latin.CapsMode
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.RichInputMethodSubtype
-import helium314.keyboard.latin.WordComposer
 import helium314.keyboard.latin.utils.InputTypeUtils
 
 /**
@@ -129,10 +129,10 @@ enum class KeyboardElement(val descriptionResId: Int) {
     val isEmojiLayout get() = this in EMOJI_RECENTS..EMOJI_EMOTICONS
     val isBottomRow get() = this == EMOJI_BOTTOM_ROW || this == CLIPBOARD_BOTTOM_ROW
     val capsMode get() = when (this) {
-        ALPHABET_AUTOMATIC_SHIFTED -> WordComposer.CAPS_MODE_AUTO_SHIFTED
-        ALPHABET_MANUAL_SHIFTED -> WordComposer.CAPS_MODE_MANUAL_SHIFTED
-        ALPHABET_SHIFT_LOCKED, ALPHABET_SHIFT_LOCK_SHIFTED -> WordComposer.CAPS_MODE_MANUAL_SHIFT_LOCKED
-        else -> WordComposer.CAPS_MODE_OFF
+        ALPHABET_AUTOMATIC_SHIFTED -> CapsMode.AUTO
+        ALPHABET_MANUAL_SHIFTED -> CapsMode.MANUAL
+        ALPHABET_SHIFT_LOCKED, ALPHABET_SHIFT_LOCK_SHIFTED -> CapsMode.MANUAL_LOCKED
+        else -> CapsMode.OFF
     }
 }
 

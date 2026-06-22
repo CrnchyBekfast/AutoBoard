@@ -30,6 +30,7 @@ import helium314.keyboard.keyboard.Keyboard;
 import helium314.keyboard.keyboard.KeyboardLayoutSet;
 import helium314.keyboard.keyboard.KeyboardSwitcher;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
+import helium314.keyboard.latin.CapsMode;
 import helium314.keyboard.latin.dictionary.Dictionary;
 import helium314.keyboard.latin.DictionaryFacilitator;
 import helium314.keyboard.latin.dictionary.DictionaryFactory;
@@ -229,12 +230,11 @@ public final class InputLogic {
      * @param event the input event containing the data.
      * @return the complete transaction object
      */
-    public InputTransaction onTextInput(final SettingsValues settingsValues, final Event event,
-            final int keyboardShiftMode, final LatinIME.UIHandler handler) {
-        final String rawText = event.getTextToCommit().toString();
-        final InputTransaction inputTransaction = new InputTransaction(settingsValues, event,
+    public InputTransaction onTextInput(SettingsValues settingsValues, Event event, CapsMode keyboardCapsMode, LatinIME.UIHandler handler) {
+        String rawText = event.getTextToCommit().toString();
+        InputTransaction inputTransaction = new InputTransaction(settingsValues, event,
                 SystemClock.uptimeMillis(), mSpaceState,
-                getActualCapsMode(settingsValues, keyboardShiftMode));
+                getActualCapsMode(settingsValues, keyboardCapsMode));
         mConnection.beginBatchEdit();
         if (GestureDataGatheringKt.useBackgroundGathering && mConnection.hasSelection())
             BackgroundGatheringCache.INSTANCE.onEditSelection(mConnection.getSelectedText(0), mConnection.getTextBeforeCursor(40, 0), mConnection.getTextAfterCursor(40, 0));
@@ -275,29 +275,28 @@ public final class InputLogic {
      * A suggestion was picked from the suggestion strip.
      * @param settingsValues the current values of the settings.
      * @param suggestionInfo the suggestion info.
-     * @param keyboardShiftState the shift state of the keyboard, as returned by
-     *     {@link helium314.keyboard.keyboard.KeyboardSwitcher#getKeyboardShiftMode()}
+     * @param keyboardCapsMode the shift state of the keyboard, as returned by
+     *     {@link helium314.keyboard.keyboard.KeyboardSwitcher#getKeyboardCapsMode()}
      * @return the complete transaction object
      */
     // Called from {@link SuggestionStripView} through the {@link SuggestionStripView#Listener}
     // interface
-    public InputTransaction onPickSuggestionManually(final SettingsValues settingsValues,
-            final SuggestedWordInfo suggestionInfo, final int keyboardShiftState,
-            final String currentKeyboardScript, final LatinIME.UIHandler handler) {
+    public InputTransaction onPickSuggestionManually(SettingsValues settingsValues, SuggestedWordInfo suggestionInfo,
+            CapsMode keyboardCapsMode, String currentKeyboardScript, LatinIME.UIHandler handler) {
         if (isInlineEmojiSearchAction()) {
             deleteTextReplacedByEmoji();
         }
 
-        final SuggestedWords suggestedWords = mSuggestedWords;
-        final String suggestion = suggestionInfo.mWord;
+        SuggestedWords suggestedWords = mSuggestedWords;
+        String suggestion = suggestionInfo.mWord;
         // If this is a punctuation picked from the suggestion strip, pass it to onCodeInput
         if (suggestion.length() == 1 && suggestedWords.isPunctuationSuggestions()) {
             // We still want to log a suggestion click.
             StatsUtils.onPickSuggestionManually(mSuggestedWords, suggestionInfo, mDictionaryFacilitator);
             // Word separators are suggested before the user inputs something.
             // Rely on onCodeInput to do the complicated swapping/stripping logic consistently.
-            final Event event = Event.createPunctuationSuggestionPickedEvent(suggestionInfo);
-            return onCodeInput(settingsValues, event, keyboardShiftState, currentKeyboardScript, handler);
+            Event event = Event.createPunctuationSuggestionPickedEvent(suggestionInfo);
+            return onCodeInput(settingsValues, event, keyboardCapsMode, currentKeyboardScript, handler);
         }
         if (GestureDataGatheringKt.useBackgroundGathering) {
             if (mWordComposer.isBatchMode())
@@ -307,9 +306,9 @@ public final class InputLogic {
                 BackgroundGatheringCache.INSTANCE.onPickSuggestion(suggestionInfo, mWordComposer.getTypedWord());
         }
 
-        final Event event = Event.createSuggestionPickedEvent(suggestionInfo);
-        final InputTransaction inputTransaction = new InputTransaction(settingsValues,
-                event, SystemClock.uptimeMillis(), mSpaceState, keyboardShiftState);
+        Event event = Event.createSuggestionPickedEvent(suggestionInfo);
+        InputTransaction inputTransaction = new InputTransaction(settingsValues, event,
+            SystemClock.uptimeMillis(), mSpaceState, keyboardCapsMode);
         // Manual pick affects the contents of the editor, so we take note of this. It's important
         // for the sequence of language switching.
         inputTransaction.setDidAffectContents();
@@ -460,13 +459,12 @@ public final class InputLogic {
      *
      * @param settingsValues the current settings values.
      * @param event the event to handle.
-     * @param keyboardShiftMode the current shift mode of the keyboard, as returned by
-     *     {@link helium314.keyboard.keyboard.KeyboardSwitcher#getKeyboardShiftMode()}
+     * @param keyboardCapsMode the current shift mode of the keyboard, as returned by
+     *     {@link helium314.keyboard.keyboard.KeyboardSwitcher#getKeyboardCapsMode()}
      * @return the complete transaction object
      */
-    public InputTransaction onCodeInput(final SettingsValues settingsValues,
-            @NonNull final Event event, final int keyboardShiftMode,
-            final String currentKeyboardScript, final LatinIME.UIHandler handler) {
+    public InputTransaction onCodeInput(SettingsValues settingsValues, @NonNull Event event,
+            CapsMode keyboardCapsMode, String currentKeyboardScript, LatinIME.UIHandler handler) {
         mWordBeingCorrectedByCursor = null;
         mJustRevertedACommit = false;
 
@@ -475,10 +473,10 @@ public final class InputLogic {
         if (GestureDataGatheringKt.useBackgroundGathering && mWordComposer.isComposingWord() && mWordComposer.isCursorFrontOrMiddleOfComposingWord())
             BackgroundGatheringCache.INSTANCE.onEditWord(mWordComposer.getTypedWord());
 
-        final Event processedEvent = mWordComposer.processEvent(event);
-        final InputTransaction inputTransaction = new InputTransaction(settingsValues,
+        Event processedEvent = mWordComposer.processEvent(event);
+        InputTransaction inputTransaction = new InputTransaction(settingsValues,
                 processedEvent, SystemClock.uptimeMillis(), mSpaceState,
-                getActualCapsMode(settingsValues, keyboardShiftMode));
+                getActualCapsMode(settingsValues, keyboardCapsMode));
         if (processedEvent.getKeyCode() != KeyCode.DELETE
                 || inputTransaction.getTimestamp() > mLastKeyTime + Constants.LONG_PRESS_MILLISECONDS) {
             mDeleteCount = 0;
@@ -571,23 +569,28 @@ public final class InputLogic {
         final int codePointBeforeCursor = mConnection.getCodePointBeforeCursor();
         if (Character.isLetterOrDigit(codePointBeforeCursor)
                 || settingsValues.isUsuallyFollowedBySpace(codePointBeforeCursor)) {
-            final boolean autoShiftHasBeenOverriden = keyboardSwitcher.getKeyboardShiftMode() !=
-                    getCurrentAutoCapsState(settingsValues);
+            int autoCapsState = getCurrentAutoCapsState(settingsValues);
+            // autoShiftHasBeenOverridden is weird
+            // before switching CapsMode to enum, it was CapsMode != autoCapsState
+            // autoCapsState is 0 (off), 0x1000, 0x2000, 0x4000 or a combination
+            // old CapsMode was 0 (off), 1, 3, 5, 7
+            // meaning both were incompatible, and the check was just returning whether both were 0
+            // todo: maybe adjust this?
+            boolean autoShiftHasBeenOverridden = keyboardSwitcher.getKeyboardCapsMode() == CapsMode.OFF && autoCapsState != 0;
             if (settingsValues.mAutospaceBeforeGestureTyping)
                 mSpaceState = SpaceState.PHANTOM;
-            if (!autoShiftHasBeenOverriden) {
+            if (!autoShiftHasBeenOverridden) {
                 // When we change the space state, we need to update the shift state of the
                 // keyboard unless it has been overridden manually. This is happening for example
                 // after typing some letters and a period, then gesturing; the keyboard is not in
                 // caps mode yet, but since a gesture is starting, it should go in caps mode,
-                // unless the user explictly said it should not.
-                keyboardSwitcher.requestUpdatingShiftState(getCurrentAutoCapsState(settingsValues),
-                        getCurrentRecapitalizeState());
+                // unless the user explicitly said it should not.
+                keyboardSwitcher.requestUpdatingShiftState(autoCapsState, getCurrentRecapitalizeState());
             }
         }
         mConnection.endBatchEdit();
         mWordComposer.setCapitalizedModeAtStartComposingTime(
-                getActualCapsMode(settingsValues, keyboardSwitcher.getKeyboardShiftMode()));
+                getActualCapsMode(settingsValues, keyboardSwitcher.getKeyboardCapsMode()));
     }
 
     /* The sequence number member is only used in onUpdateBatchInput. It is increased each time
@@ -1329,7 +1332,7 @@ public final class InputLogic {
                     // No need to reset mSpaceState, it has already be done (that's why we
                     // receive it as a parameter)
                     inputTransaction.setRequiresUpdateSuggestions();
-                    mWordComposer.setCapitalizedModeAtStartComposingTime(WordComposer.CAPS_MODE_OFF);
+                    mWordComposer.setCapitalizedModeAtStartComposingTime(CapsMode.OFF);
                     StatsUtils.onRevertDoubleSpacePeriod();
                     return;
                 }
@@ -1808,7 +1811,7 @@ public final class InputLogic {
 
         if (!mConnection.isCursorTouchingWord(settingsValues.mSpacingAndPunctuations, true /* checkTextAfter */)) {
             // Show predictions.
-            mWordComposer.setCapitalizedModeAtStartComposingTime(WordComposer.CAPS_MODE_OFF);
+            mWordComposer.setCapitalizedModeAtStartComposingTime(CapsMode.OFF);
             mLatinIME.mHandler.postUpdateSuggestionStrip(SuggestedWords.INPUT_STYLE_RECORRECTION);
             // "unselect" the previous text
             mConnection.finishComposingText();
@@ -1986,23 +1989,22 @@ public final class InputLogic {
     /**
      * Factor in auto-caps and manual caps and compute the current caps mode.
      * @param settingsValues the current settings values.
-     * @param keyboardShiftMode the current shift mode of the keyboard. See
+     * @param keyboardCapsMode the current shift mode of the keyboard. See
      *   KeyboardSwitcher#getKeyboardShiftMode() for possible values.
      * @return the actual caps mode the keyboard is in right now.
      */
-    private int getActualCapsMode(final SettingsValues settingsValues,
-            final int keyboardShiftMode) {
-        if (keyboardShiftMode != WordComposer.CAPS_MODE_AUTO_SHIFTED) {
-            return keyboardShiftMode;
+    private CapsMode getActualCapsMode(SettingsValues settingsValues, CapsMode keyboardCapsMode) {
+        if (keyboardCapsMode != CapsMode.AUTO) {
+            return keyboardCapsMode;
         }
-        final int auto = getCurrentAutoCapsState(settingsValues);
+        int auto = getCurrentAutoCapsState(settingsValues);
         if (0 != (auto & TextUtils.CAP_MODE_CHARACTERS)) {
-            return WordComposer.CAPS_MODE_AUTO_SHIFT_LOCKED;
+            return CapsMode.AUTO_LOCKED;
         }
         if (0 != auto) {
-            return WordComposer.CAPS_MODE_AUTO_SHIFTED;
+            return CapsMode.AUTO;
         }
-        return WordComposer.CAPS_MODE_OFF;
+        return CapsMode.OFF;
     }
 
     /**
@@ -2016,7 +2018,7 @@ public final class InputLogic {
      * @param settingsValues the relevant settings values
      * @return a caps mode from TextUtils.CAP_MODE_* or Constants.TextUtils.CAP_MODE_OFF.
      */
-    public int getCurrentAutoCapsState(final SettingsValues settingsValues) {
+    public int getCurrentAutoCapsState(SettingsValues settingsValues) {
         if (!settingsValues.mAutoCap) return Constants.TextUtils.CAP_MODE_OFF;
 
         final EditorInfo ei = getCurrentInputEditorInfo();
@@ -2532,7 +2534,7 @@ public final class InputLogic {
         }
         final SettingsValues settingsValues = Settings.getValues();
         mWordComposer.adviseCapitalizedModeBeforeFetchingSuggestions(
-                getActualCapsMode(settingsValues, KeyboardSwitcher.getInstance().getKeyboardShiftMode()));
+                getActualCapsMode(settingsValues, KeyboardSwitcher.getInstance().getKeyboardCapsMode()));
         try {
             SuggestedWords suggestedWords = mSuggest.getSuggestedWords(mWordComposer.copy(),
                     getNgramContextFromNthPreviousWordForSuggestion(
