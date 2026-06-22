@@ -1163,7 +1163,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
                 || (code == Constants.CODE_SPACE && key.getPopupKeys() == null && Settings.getValues().mSpaceForLangChange)
         ) {
             // Long pressing the space key invokes IME switcher dialog.
-            if (sListener.onCustomRequest(Constants.CUSTOM_CODE_SHOW_INPUT_METHOD_PICKER)) {
+            if (sListener.onCustomRequest(KeyboardActionListener.CustomAction.SHOW_INPUT_METHOD_PICKER)) {
                 cancelKeyTracking();
                 sListener.onReleaseKey(code, false);
                 return;
