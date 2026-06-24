@@ -118,6 +118,7 @@
     ta_SG: Tamil (Singapore)/tamil
     te_IN: Telugu (India)/telugu
     th: Thai/thai
+    tok: Toki Pona/qwerty
     tl: Tagalog/qwerty+
     tr: Turkish/turkish
     ur_PK: Urdu Pakistan
@@ -1227,6 +1228,15 @@
         android:imeSubtypeMode="keyboard"
         android:imeSubtypeExtraValue="KeyboardLayoutSet=MAIN:thai,NoShiftProximityCorrection,EmojiCapable"
         android:isAsciiCapable="false"
+    />
+    <subtype android:icon="@drawable/ic_ime_switcher"
+        android:label="@string/subtype_generic"
+        android:subtypeId="0x67e4505d"
+        android:imeSubtypeLocale="tok"
+        android:languageTag="tok"
+        android:imeSubtypeMode="keyboard"
+        android:imeSubtypeExtraValue="AsciiCapable,SupportTouchPositionCorrection,EmojiCapable"
+        android:isAsciiCapable="true"
     />
     <subtype android:icon="@drawable/ic_ime_switcher"
         android:label="@string/subtype_generic"
