@@ -27,6 +27,8 @@ import androidx.annotation.Nullable;
 import helium314.keyboard.event.Event;
 import helium314.keyboard.event.InputTransaction;
 import helium314.keyboard.keyboard.Keyboard;
+import helium314.keyboard.latin.llama.LlamaPredictor;
+import helium314.keyboard.latin.llama.PromptBuilder;
 import helium314.keyboard.keyboard.KeyboardLayoutSet;
 import helium314.keyboard.keyboard.KeyboardSwitcher;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
@@ -1732,6 +1734,21 @@ public final class InputLogic {
         if (!mWordComposer.isComposingWord() && !settingsValues.mBigramPredictionEnabled) {
             mSuggestionStripViewAccessor.setNeutralSuggestionStrip();
             return;
+        }
+
+        // Fire async LLM next-word prediction when there is no composing word.
+        if (!mWordComposer.isComposingWord()) {
+            final LlamaPredictor predictor = mLatinIME.getLlamaPredictor();
+            if (predictor != null) {
+                final EditorInfo ei = mLatinIME.getCurrentInputEditorInfo();
+                final String pkgName = (ei != null && ei.packageName != null) ? ei.packageName : "";
+                final CharSequence before = mConnection.getTextBeforeCursor(300, 0);
+                final String textBefore = before != null ? before.toString() : "";
+                final helium314.keyboard.latin.llama.ScreenContextService svc =
+                    helium314.keyboard.latin.llama.ScreenContextService.Companion.getInstance();
+                final String screenText = svc != null ? svc.getScreenText(mLatinIME.getPackageName()) : "";
+                predictor.predict(PromptBuilder.INSTANCE.build(pkgName, textBefore, screenText));
+            }
         }
 
         final AsyncResultHolder<SuggestedWords> holder = new AsyncResultHolder<>("Suggest");

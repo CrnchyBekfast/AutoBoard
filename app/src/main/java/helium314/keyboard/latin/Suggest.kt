@@ -40,8 +40,19 @@ class Suggest(private val mDictionaryFacilitator: DictionaryFacilitator) {
     private val mPlausibilityThreshold = 0f
     private val nextWordSuggestionsCache = HashMap<NgramContext, SuggestionResults>()
 
+    // LLM next-word predictions injected asynchronously by LlamaPredictor.
+    // Written from the main thread callback; read on the suggestion worker thread.
+    @Volatile var mLlamaWords: List<String> = emptyList()
+
+    fun setLlamaWords(words: List<String>) {
+        mLlamaWords = words
+    }
+
     // cache cleared whenever LatinIME.loadSettings is called, notably on changing layout and switching input fields
-    fun clearNextWordSuggestionsCache() = nextWordSuggestionsCache.clear()
+    fun clearNextWordSuggestionsCache() {
+        nextWordSuggestionsCache.clear()
+        mLlamaWords = emptyList()
+    }
 
     /**
      * Set the normalized-score threshold for a suggestion to be considered strong enough that we
@@ -82,6 +93,24 @@ class Suggest(private val mDictionaryFacilitator: DictionaryFacilitator) {
         val trailingSingleQuotesCount = StringUtils.getTrailingSingleQuotesCount(typedWordString)
         val capsMode = getCapsModeForTyping(wordComposer, keyboard)
         val suggestionsContainer = ArrayList(suggestionResults)
+
+        // Prepend LLM next-word predictions when there is no composing word.
+        // LLM words have a very high score so they sort to the front of the strip.
+        if (typedWordString.isEmpty()) {
+            val llmWords = mLlamaWords
+            if (llmWords.isNotEmpty()) {
+                val llmEntries = llmWords.mapIndexed { idx, word ->
+                    SuggestedWordInfo(
+                        word, "", Int.MAX_VALUE / 2 - idx,
+                        SuggestedWordInfo.KIND_PREDICTION,
+                        Dictionary.DICTIONARY_USER_TYPED,
+                        SuggestedWordInfo.NOT_AN_INDEX,
+                        SuggestedWordInfo.NOT_A_CONFIDENCE
+                    )
+                }
+                suggestionsContainer.addAll(0, llmEntries)
+            }
+        }
         capitalizeAndAddTrailingSingleQuotes(suggestionsContainer, capsMode, trailingSingleQuotesCount, mDictionaryFacilitator.mainLocale)
         val capitalizedTypedWord = capitalize(typedWordString, capsMode, mDictionaryFacilitator.mainLocale)
 

@@ -1,2 +1,4 @@
 include ':app'
 include ':tools:make-emoji-keys'
+include ':llama'
+project(':llama').projectDir = file('llama')

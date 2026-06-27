@@ -36,6 +36,7 @@ android {
             isShrinkResources = false
             isDebuggable = false
             isJniDebuggable = false
+            matchingFallbacks += listOf("release")
         }
         debug {
             // "normal" debug has minify for smaller APK to fit the GitHub 25 MB limit when zipped
@@ -47,6 +48,7 @@ android {
         create("runTests") { // build variant for running tests on CI that skips tests known to fail
             isMinifyEnabled = false
             isJniDebuggable = false
+            matchingFallbacks += listOf("debug")
         }
         create("debugNoMinify") { // for faster builds in IDE
             isDebuggable = true
@@ -54,6 +56,7 @@ android {
             isJniDebuggable = false
             signingConfig = signingConfigs.getByName("debug")
             applicationIdSuffix = ".debug"
+            matchingFallbacks += listOf("debug")
         }
 
         androidComponents.onVariants { variant: ApplicationVariant ->
@@ -84,7 +87,7 @@ android {
             path = File("src/main/jni/Android.mk")
         }
     }
-    ndkVersion = "28.0.13004108"
+    ndkVersion = "27.0.12077973"
 
     packaging {
         jniLibs {
@@ -146,6 +149,10 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.9.8")
     implementation("sh.calvin.reorderable:reorderable:3.1.0") // for easier re-ordering
     implementation("com.github.skydoves:colorpicker-compose:1.1.3") // for user-defined colors
+
+    // llama.cpp inference module
+    implementation(project(":llama"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
     // test
     testImplementation(kotlin("test"))

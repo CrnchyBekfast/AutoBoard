@@ -103,6 +103,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 
+import helium314.keyboard.latin.llama.LlamaPredictor;
+import helium314.keyboard.latin.llama.ModelDownloader;
+import helium314.keyboard.latin.llama.PromptBuilder;
+
 /**
  * Input method implementation for Qwerty'ish keyboard.
  */
@@ -135,6 +139,9 @@ public class LatinIME extends InputMethodService implements
             DictionaryFacilitatorProvider.getDictionaryFacilitator(false);
     private final DictionaryFacilitator mOriginalDictionaryFacilitator = mDictionaryFacilitator;
     final InputLogic mInputLogic = new InputLogic(this, this, mDictionaryFacilitator);
+
+    // LLM next-word predictor (null until loadModel() succeeds)
+    private LlamaPredictor mLlamaPredictor;
 
     // TODO: Move these {@link View}s to {@link KeyboardSwitcher}.
     private View mInputView;
@@ -581,6 +588,43 @@ public class LatinIME extends InputMethodService implements
         registerReceiver(mRestartAfterDeviceUnlockReceiver, restartAfterUnlockFilter);
 
         StatsUtils.onCreate(mSettings.getCurrent(), mRichImm);
+
+        initLlamaPredictor();
+    }
+
+    private void initLlamaPredictor() {
+        mLlamaPredictor = new LlamaPredictor(words -> {
+            mInputLogic.mSuggest.setLlamaWords(words);
+            mHandler.postUpdateSuggestionStrip(0);
+            return Unit.INSTANCE;
+        });
+        java.io.File modelFile = new java.io.File(getFilesDir(), "models/gemma-3-1b-kbd-q4km.gguf");
+        if (modelFile.exists()) {
+            mLlamaPredictor.loadModel(modelFile.getAbsolutePath());
+        }
+    }
+
+    /**
+     * Download the GGUF from the default HuggingFace URL and load it into the predictor.
+     * Must be called from a background thread. [onProgress] receives 0-100.
+     */
+    public void downloadAndLoadModel(kotlin.jvm.functions.Function1<Integer, kotlin.Unit> onProgress) {
+        downloadAndLoadModel(ModelDownloader.MODEL_URL, onProgress);
+    }
+
+    /**
+     * Download the GGUF from [url] and load it into the predictor.
+     * Must be called from a background thread. [onProgress] receives 0-100.
+     */
+    public void downloadAndLoadModel(String url, kotlin.jvm.functions.Function1<Integer, kotlin.Unit> onProgress) {
+        java.io.File dest = new java.io.File(getFilesDir(), "models/gemma-3-1b-kbd-q4km.gguf");
+        boolean ok = ModelDownloader.INSTANCE.download(url, dest, onProgress);
+        if (ok && mLlamaPredictor != null) mLlamaPredictor.loadModel(dest.getAbsolutePath());
+    }
+
+    @Nullable
+    public LlamaPredictor getLlamaPredictor() {
+        return mLlamaPredictor;
     }
 
     private void loadSettings() {
@@ -692,6 +736,7 @@ public class LatinIME extends InputMethodService implements
 
     @Override
     public void onDestroy() {
+        if (mLlamaPredictor != null) mLlamaPredictor.shutdown();
         mClipboardHistoryManager.onDestroy();
         mDictionaryFacilitator.closeDictionaries();
         mSettings.onDestroy();

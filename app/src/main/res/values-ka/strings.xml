@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
     Copyright (C) 2008 The Android Open Source Project
     modified
@@ -112,11 +112,11 @@
     <string name="prefs_long_press_keyboard_to_change_lang_summary">გამოტოვების ღილაკზე დიდხანს დაწოლა შეყვანის მეთოდის მენიუს გაჩვენებთ</string>
     <string name="show_hints">ღილაკის მინიშნებების ჩვენება</string>
     <string name="show_hints_summary">დიდხანს-დაწოლის მინიშენების ჩვენება</string>
-    <string name="spell_checker_service_name">HeliBoard-ის მართლწერის შემოწმება</string>
-    <string name="android_spell_checker_settings">HeliBoard-ის მართლწერის შემოწმების მორგება</string>
+    <string name="spell_checker_service_name">AutoBoard-ის მართლწერის შემოწმება</string>
+    <string name="android_spell_checker_settings">AutoBoard-ის მართლწერის შემოწმების მორგება</string>
     <string name="show_emoji_key">ემოჯის ღილაკი</string>
     <string name="delete_swipe">ჟესტით წაშლა</string>
-    <string name="ime_settings">HeliBoard-ის მორგება</string>
+    <string name="ime_settings">AutoBoard-ის მორგება</string>
     <string name="settings_category_input">შეყვანა</string>
     <string name="settings_category_additional_keys">დამატებითი ღილაკები</string>
     <string name="settings_category_suggestions">მინიშნებები</string>
