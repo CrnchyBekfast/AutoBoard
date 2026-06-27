@@ -7,7 +7,7 @@ AutoBoard is a fork of [HeliBoard](https://github.com/HeliBorg/HeliBoard) — a 
 The suggestion strip operates in two phases:
 
 1. **Instant** — HeliBoard's existing n-gram dictionary fires synchronously and populates the strip immediately.
-2. **Async LLM** — a background coroutine runs a single forward pass through the model and updates the strip with ranked predictions when ready (~2–4 s on a real arm64 device).
+2. **Async LLM** — a background coroutine runs a single forward pass through the model and updates the strip with ranked predictions when ready (~15–25 ms/token on a Pixel 9 Pro).
 
 The LLM sees a structured prompt built from three sources:
 
