@@ -2,6 +2,18 @@
 
 AutoBoard is a fork of [HeliBoard](https://github.com/HeliBorg/HeliBoard) — a privacy-conscious, open-source Android keyboard — extended with an on-device LLM for context-aware next-word prediction. A fine-tuned Gemma 3 1B model reads everything visible on screen via the Accessibility API and predicts your next word based on the full conversational context, the app you are typing in, and what you have already typed.
 
+## Benchmark
+
+Evaluated on 1,865 held-out examples against HeliBoard's built-in n-gram dictionary:
+
+| Metric | Gemma 3 1B | N-gram |
+|---|---|---|
+| MRR (top-5) | **0.3772** | 0.0509 |
+| Hit@5 | **52.4%** | 9.9% |
+| Gemma wins | **92.2%** | — |
+
+**7.4× higher MRR** than the n-gram baseline. In head-to-head comparison on examples where at least one model scored, Gemma won 925 of 1,003 contested examples (92.2%) vs. 45 for n-gram (4.5%).
+
 ## How it works
 
 The suggestion strip operates in two phases:
